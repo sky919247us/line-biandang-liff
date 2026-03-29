@@ -1,0 +1,210 @@
+/**
+ * 結帳頁面樣式
+ */
+
+.checkout-page {
+    background: var(--bg-secondary);
+}
+
+.checkout-page .page-content {
+    padding-bottom: calc(100px + env(safe-area-inset-bottom));
+}
+
+/* 區塊 */
+.checkout-section {
+    background: var(--bg-primary);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-sm);
+}
+
+.checkout-section__title {
+    font-size: var(--font-size-md);
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-md);
+}
+
+/* 取餐方式 */
+.checkout-order-type {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    background: var(--bg-secondary);
+    border-radius: var(--border-radius-md);
+}
+
+.checkout-order-type svg {
+    color: var(--color-primary);
+    flex-shrink: 0;
+}
+
+.checkout-order-type strong {
+    display: block;
+    font-size: var(--font-size-md);
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+.checkout-order-type p {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+}
+
+/* 表單 */
+.checkout-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+/* 訂單明細 */
+.checkout-items {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.checkout-item {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-sm) 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.checkout-item:last-child {
+    border-bottom: none;
+}
+
+.checkout-item__info {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.checkout-item__name {
+    font-size: var(--font-size-md);
+    color: var(--text-primary);
+}
+
+.checkout-item__qty {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+}
+
+.checkout-item__customizations {
+    width: 100%;
+    font-size: var(--font-size-xs);
+    color: var(--text-tertiary);
+    margin-top: 4px;
+}
+
+.checkout-item__price {
+    font-size: var(--font-size-md);
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+/* 金額明細 */
+.checkout-summary {
+    padding-top: var(--spacing-sm);
+}
+
+.checkout-summary__row {
+    display: flex;
+    justify-content: space-between;
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-xs);
+}
+
+.checkout-summary__row--total {
+    font-size: var(--font-size-md);
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-top: var(--spacing-sm);
+    padding-top: var(--spacing-sm);
+    border-top: 1px solid var(--border-color);
+}
+
+.checkout-summary__total {
+    font-size: var(--font-size-xl);
+    font-weight: 700;
+    color: var(--color-primary);
+}
+
+/* 優惠碼 */
+.checkout-coupon-input {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+.checkout-coupon-input .input {
+    flex: 1;
+}
+
+.checkout-coupon-input .btn {
+    flex-shrink: 0;
+}
+
+.checkout-coupon-applied {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: rgba(34, 197, 94, 0.1);
+    border: 1px solid rgba(34, 197, 94, 0.3);
+    border-radius: var(--border-radius-md);
+}
+
+.checkout-coupon-applied__info {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    color: var(--color-success);
+    font-size: var(--font-size-sm);
+}
+
+.checkout-coupon-remove {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.checkout-coupon-error {
+    margin-top: var(--spacing-xs);
+    font-size: var(--font-size-sm);
+    color: var(--color-error);
+}
+
+/* 錯誤訊息 */
+.checkout-error {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md);
+    margin: var(--spacing-md);
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid var(--color-error);
+    border-radius: var(--border-radius-md);
+    color: var(--color-error);
+    font-size: var(--font-size-sm);
+}
+
+/* 底部按鈕 */
+.checkout-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: var(--spacing-md);
+    padding-bottom: calc(var(--spacing-md) + env(safe-area-inset-bottom));
+    background: var(--bg-primary);
+    border-top: 1px solid var(--border-color);
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
+}

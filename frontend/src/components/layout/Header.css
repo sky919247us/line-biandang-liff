@@ -1,0 +1,81 @@
+/**
+ * Header 頂部導航樣式
+ */
+
+.header {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-dropdown);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+    padding: 0 var(--spacing-md);
+    background: var(--bg-primary);
+    border-bottom: 1px solid var(--border-color);
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.95);
+}
+
+.header__left,
+.header__right {
+    width: 48px;
+    display: flex;
+    align-items: center;
+}
+
+.header__right {
+    justify-content: flex-end;
+}
+
+.header__title {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    color: var(--text-primary);
+    text-align: center;
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.header__back-btn,
+.header__cart-btn {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--border-radius-full);
+    color: var(--text-primary);
+    transition: all var(--transition-fast);
+}
+
+.header__back-btn:hover,
+.header__cart-btn:hover {
+    background: var(--bg-secondary);
+}
+
+.header__back-btn:active,
+.header__cart-btn:active {
+    transform: scale(0.95);
+}
+
+.header__cart-badge {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 4px;
+    background: var(--color-primary);
+    color: var(--text-inverse);
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: var(--border-radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: scaleIn var(--transition-fast) ease-out;
+}

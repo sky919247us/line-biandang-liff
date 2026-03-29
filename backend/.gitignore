@@ -1,0 +1,23 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# 環境變數（包含密鑰）
+.env
+.env.local
+.env.production
+
+# 資料庫檔案
+*.db
+*.sqlite
+*.sqlite3
+
+# OS
+.DS_Store

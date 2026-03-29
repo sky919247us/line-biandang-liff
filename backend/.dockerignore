@@ -1,0 +1,11 @@
+.env
+.env.*
+*.db
+*.sqlite
+__pycache__
+.venv
+venv
+tests/
+.git
+.gitignore
+*.md

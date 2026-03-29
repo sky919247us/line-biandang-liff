@@ -1,0 +1,1 @@
+export { StampCardPage } from './StampCardPage';

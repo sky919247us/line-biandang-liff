@@ -1,0 +1,223 @@
+/**
+ * 個人資料頁面樣式
+ */
+
+.profile-page {
+    background: var(--bg-secondary);
+}
+
+/* 使用者資訊區塊 */
+.profile-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg);
+    background: linear-gradient(135deg, var(--color-primary) 0%, #ff8f4d 100%);
+    color: var(--text-inverse);
+}
+
+.profile-avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: var(--border-radius-full);
+    background: rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.profile-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-info {
+    flex: 1;
+}
+
+.profile-name {
+    font-size: var(--font-size-xl);
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.profile-phone {
+    font-size: var(--font-size-sm);
+    opacity: 0.9;
+}
+
+/* 功能選單 */
+.profile-menu {
+    padding: var(--spacing-md);
+}
+
+.profile-menu__section {
+    background: var(--bg-primary);
+    border-radius: var(--border-radius-lg);
+    margin-bottom: var(--spacing-md);
+    overflow: hidden;
+}
+
+.profile-menu__title {
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: var(--bg-secondary);
+}
+
+.profile-menu__item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    width: 100%;
+    padding: var(--spacing-md);
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+    transition: background var(--transition-fast);
+}
+
+.profile-menu__item:hover {
+    background: var(--bg-secondary);
+}
+
+.profile-menu__item:last-child {
+    border-bottom: none;
+}
+
+.profile-menu__icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-primary-50);
+    color: var(--color-primary);
+    border-radius: var(--border-radius-md);
+}
+
+.profile-menu__label {
+    flex: 1;
+    font-size: var(--font-size-md);
+    color: var(--text-primary);
+}
+
+.profile-menu__arrow {
+    color: var(--text-tertiary);
+}
+
+/* 登出按鈕 */
+.profile-logout-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    width: 100%;
+    padding: var(--spacing-md);
+    background: var(--bg-primary);
+    border-radius: var(--border-radius-lg);
+    font-size: var(--font-size-md);
+    font-weight: 500;
+    color: var(--color-error);
+    transition: all var(--transition-fast);
+}
+
+.profile-logout-btn:hover {
+    background: rgba(239, 68, 68, 0.1);
+}
+
+/* 版本資訊 */
+.profile-version {
+    padding: var(--spacing-lg);
+    text-align: center;
+}
+
+.profile-version p {
+    font-size: var(--font-size-xs);
+    color: var(--text-tertiary);
+}
+
+/* 訪客狀態 */
+.profile-guest {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+    gap: var(--spacing-md);
+}
+
+.profile-avatar--guest {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.profile-guest .profile-info {
+    text-align: center;
+}
+
+.profile-hint {
+    font-size: var(--font-size-sm);
+    opacity: 0.8;
+}
+
+.profile-login-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    background: #00C300 !important;
+    border-color: #00C300 !important;
+    margin-top: var(--spacing-sm);
+}
+
+.profile-login-btn:hover {
+    background: #00a000 !important;
+}
+
+/* 載入狀態 */
+.profile-loading {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    width: 100%;
+}
+
+.profile-loading .profile-avatar {
+    width: 64px;
+    height: 64px;
+}
+
+/* 停用狀態 */
+.profile-menu__item:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.profile-menu__item:disabled:hover {
+    background: transparent;
+}
+
+/* 狀態標籤 */
+.profile-status {
+    display: flex;
+    justify-content: center;
+    padding: var(--spacing-md);
+}
+
+.profile-status__badge {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--border-radius-full);
+    font-size: var(--font-size-xs);
+    font-weight: 500;
+}
+
+.profile-status__badge--line {
+    background: #00C300;
+    color: white;
+}

@@ -1,0 +1,61 @@
+# Render Blueprint 配置檔案
+# 免費方案：Backend on Render Free + Frontend on Cloudflare Pages + Neon PostgreSQL
+#
+# 部署步驟：
+# 1. 在 Neon.tech 建立免費 PostgreSQL，取得 DATABASE_URL
+# 2. 在 Render Dashboard 用此 Blueprint 部署後端
+# 3. 在 Cloudflare Pages 部署前端（見 DEPLOY.md）
+
+services:
+  # 後端 API 服務（Render Free）
+  - type: web
+    name: biandang-backend
+    runtime: docker
+    region: singapore
+    rootDir: backend
+    dockerfilePath: ./Dockerfile
+    plan: free
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      # 資料庫（外部 Neon PostgreSQL 免費方案）
+      - key: DATABASE_URL
+        sync: false  # 手動填入 Neon 連線字串
+      # Redis 不需要（自動降級為記憶體快取）
+      - key: REDIS_URL
+        value: ""
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "false"
+      # LINE 設定
+      - key: LINE_CHANNEL_ID
+        sync: false
+      - key: LINE_CHANNEL_SECRET
+        sync: false
+      - key: LINE_CHANNEL_ACCESS_TOKEN
+        sync: false
+      - key: LINE_LIFF_ID
+        sync: false
+      # Google Maps（停用，使用 Haversine）
+      - key: GOOGLE_MAPS_API_KEY
+        value: ""
+      - key: GOOGLE_MAPS_ENABLED
+        value: "false"
+      # 店家設定
+      - key: STORE_LATITUDE
+        value: "24.1378"
+      - key: STORE_LONGITUDE
+        value: "120.6828"
+      - key: STORE_ADDRESS
+        value: "台中市中區興中街20號"
+      - key: MAX_DELIVERY_DISTANCE_KM
+        value: "5"
+      - key: MIN_ORDER_AMOUNT
+        value: "150"
+      # 前端 URL（CORS 用）
+      - key: FRONTEND_URL
+        sync: false  # 填入 Cloudflare Pages 的網址
+
+# 不使用 Render 內建資料庫（改用免費的 Neon PostgreSQL）
+# 不使用 Redis（記憶體快取足夠便當店規模）

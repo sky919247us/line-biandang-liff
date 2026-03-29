@@ -1,0 +1,110 @@
+/**
+ * 系統設定頁面樣式
+ */
+
+.admin-settings__section {
+    margin-bottom: var(--spacing-lg);
+}
+
+.admin-settings__form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing-md);
+}
+
+.form-group--full {
+    grid-column: 1 / -1;
+}
+
+/* 公休日選擇器 */
+.admin-settings__day-selector {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+}
+
+.admin-settings__day-option {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 40px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    font-size: var(--font-size-sm);
+}
+
+.admin-settings__day-option input {
+    display: none;
+}
+
+.admin-settings__day-option:hover {
+    border-color: var(--color-primary);
+}
+
+.admin-settings__day-option.active {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: white;
+}
+
+/* Toggle */
+.admin-settings__toggle {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    cursor: pointer;
+}
+
+.admin-settings__toggle input {
+    display: none;
+}
+
+.admin-settings__toggle-slider {
+    position: relative;
+    width: 48px;
+    height: 26px;
+    background: var(--color-gray-300);
+    border-radius: var(--border-radius-full);
+    transition: all var(--transition-fast);
+}
+
+.admin-settings__toggle-slider::before {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 20px;
+    height: 20px;
+    background: white;
+    border-radius: var(--border-radius-full);
+    transition: all var(--transition-fast);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.admin-settings__toggle input:checked+.admin-settings__toggle-slider {
+    background: var(--color-success);
+}
+
+.admin-settings__toggle input:checked+.admin-settings__toggle-slider::before {
+    transform: translateX(22px);
+}
+
+/* 儲存區塊 */
+.admin-settings__actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg);
+    background: var(--bg-primary);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-sm);
+}
+
+.admin-settings__success {
+    color: var(--color-success);
+    font-weight: 500;
+}

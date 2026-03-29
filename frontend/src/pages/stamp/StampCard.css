@@ -1,0 +1,251 @@
+/**
+ * 集點卡頁面樣式
+ */
+
+/* Templates section */
+.stamp-section {
+    background: var(--bg-primary);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+}
+
+.stamp-section h3 {
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    margin-bottom: var(--spacing-md);
+}
+
+/* Template card */
+.stamp-template {
+    background: var(--bg-secondary);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-sm);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.stamp-template:last-child {
+    margin-bottom: 0;
+}
+
+.stamp-template__info {
+    flex: 1;
+}
+
+.stamp-template__name {
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    color: var(--text-primary);
+    display: block;
+    margin-bottom: 2px;
+}
+
+.stamp-template__desc {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    display: block;
+    margin-bottom: 4px;
+}
+
+.stamp-template__meta {
+    font-size: var(--font-size-xs);
+    color: var(--text-tertiary);
+}
+
+.stamp-template__btn {
+    flex-shrink: 0;
+    margin-left: var(--spacing-md);
+    padding: 8px 16px;
+    border: none;
+    border-radius: var(--border-radius-md);
+    background: var(--color-primary);
+    color: white;
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.stamp-template__btn:disabled {
+    background: var(--bg-secondary);
+    color: var(--text-tertiary);
+    cursor: not-allowed;
+}
+
+/* Stamp card */
+.stamp-card {
+    background: var(--bg-primary);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
+    border: 2px solid var(--border-color);
+}
+
+.stamp-card--completed {
+    border-color: var(--color-success);
+}
+
+.stamp-card--claimed {
+    border-color: var(--text-tertiary);
+    opacity: 0.7;
+}
+
+.stamp-card__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-md);
+}
+
+.stamp-card__name {
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.stamp-card__badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: var(--border-radius-full);
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+}
+
+.stamp-card__badge--active {
+    background: #e3f2fd;
+    color: #1976d2;
+}
+
+.stamp-card__badge--completed {
+    background: #e8f5e9;
+    color: #388e3c;
+}
+
+.stamp-card__badge--claimed {
+    background: var(--bg-secondary);
+    color: var(--text-tertiary);
+}
+
+/* Stamp grid */
+.stamp-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+}
+
+.stamp-circle {
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 2px dashed var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    transition: all 0.3s ease;
+}
+
+.stamp-circle--filled {
+    background: var(--color-primary);
+    border: 2px solid var(--color-primary);
+    color: white;
+}
+
+.stamp-circle--empty {
+    background: var(--bg-secondary);
+    color: var(--text-tertiary);
+}
+
+/* Progress */
+.stamp-progress {
+    margin-bottom: var(--spacing-md);
+}
+
+.stamp-progress__text {
+    display: flex;
+    justify-content: space-between;
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-xs);
+}
+
+.stamp-progress__bar {
+    height: 8px;
+    background: var(--bg-secondary);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.stamp-progress__fill {
+    height: 100%;
+    background: var(--color-primary);
+    border-radius: 4px;
+    transition: width 0.5s ease;
+}
+
+.stamp-progress__fill--completed {
+    background: var(--color-success);
+}
+
+/* Claim button */
+.stamp-card__claim-btn {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: var(--border-radius-md);
+    background: var(--color-success);
+    color: white;
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.stamp-card__claim-btn:disabled {
+    background: var(--bg-secondary);
+    color: var(--text-tertiary);
+    cursor: not-allowed;
+}
+
+/* Reward info */
+.stamp-card__reward {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm);
+    background: #fff8e1;
+    border-radius: var(--border-radius-md);
+    margin-bottom: var(--spacing-md);
+    font-size: var(--font-size-sm);
+    color: #f57f17;
+}
+
+.stamp-card__reward-icon {
+    flex-shrink: 0;
+    font-size: 20px;
+}
+
+/* Empty state */
+.stamp-empty {
+    text-align: center;
+    padding: var(--spacing-xl);
+    color: var(--text-tertiary);
+}
+
+.stamp-empty p {
+    margin-bottom: var(--spacing-sm);
+}
+
+/* Skeleton */
+.stamp-skeleton {
+    padding: var(--spacing-md);
+}
+
+/* Loading overlay for buttons */
+.stamp-template__btn--loading,
+.stamp-card__claim-btn--loading {
+    position: relative;
+    color: transparent;
+}

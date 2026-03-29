@@ -1,0 +1,289 @@
+/**
+ * 推薦好友頁面樣式
+ */
+
+/* 推薦碼卡片 */
+.referral-code-card {
+    background: var(--bg-primary);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
+    border: 2px solid var(--color-primary);
+}
+
+.referral-code-card__title {
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    margin-bottom: var(--spacing-md);
+    color: var(--text-primary);
+}
+
+.referral-code-card__code-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--bg-secondary);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-sm) var(--spacing-md);
+    margin-bottom: var(--spacing-sm);
+}
+
+.referral-code-card__code {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--color-primary);
+}
+
+.referral-code-card__copy-btn {
+    padding: 6px 16px;
+    border: 1px solid var(--color-primary);
+    border-radius: var(--border-radius-md);
+    background: transparent;
+    color: var(--color-primary);
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.referral-code-card__copy-btn:active {
+    background: var(--color-primary);
+    color: white;
+}
+
+.referral-code-card__share-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-sm);
+}
+
+.referral-code-card__share-label {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+}
+
+.referral-code-card__share-btn {
+    padding: 6px 16px;
+    border: none;
+    border-radius: var(--border-radius-md);
+    background: var(--color-primary);
+    color: white;
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.referral-code-card__share-btn:active {
+    opacity: 0.8;
+}
+
+.referral-code-card__hint {
+    font-size: var(--font-size-xs);
+    color: var(--text-tertiary);
+    margin-top: var(--spacing-sm);
+    line-height: 1.5;
+}
+
+/* 統計區塊 */
+.referral-stats {
+    display: flex;
+    justify-content: space-around;
+    background: var(--bg-primary);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+}
+
+.referral-stats__item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.referral-stats__value {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.referral-stats__label {
+    font-size: var(--font-size-xs);
+    color: var(--text-tertiary);
+}
+
+/* 套用推薦碼 */
+.referral-apply {
+    background: var(--bg-primary);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+}
+
+.referral-apply__title {
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    margin-bottom: var(--spacing-sm);
+    color: var(--text-primary);
+}
+
+.referral-apply__row {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+.referral-apply__input {
+    flex: 1;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    font-size: var(--font-size-base);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.referral-apply__input:focus {
+    border-color: var(--color-primary);
+}
+
+.referral-apply__input::placeholder {
+    color: var(--text-tertiary);
+}
+
+.referral-apply__btn {
+    padding: var(--spacing-sm) var(--spacing-lg);
+    border: none;
+    border-radius: var(--border-radius-md);
+    background: var(--color-primary);
+    color: white;
+    font-size: var(--font-size-base);
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: opacity 0.2s;
+}
+
+.referral-apply__btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.referral-apply__btn:not(:disabled):active {
+    opacity: 0.8;
+}
+
+.referral-apply__message {
+    margin-top: var(--spacing-sm);
+    font-size: var(--font-size-sm);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--border-radius-sm);
+}
+
+.referral-apply__message--success {
+    color: var(--color-success);
+    background: rgba(46, 204, 113, 0.1);
+}
+
+.referral-apply__message--error {
+    color: var(--color-error);
+    background: rgba(231, 76, 60, 0.1);
+}
+
+/* 推薦紀錄列表 */
+.referral-list {
+    background: var(--bg-primary);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-md);
+}
+
+.referral-list__title {
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    margin-bottom: var(--spacing-md);
+    color: var(--text-primary);
+}
+
+.referral-list__items {
+    display: flex;
+    flex-direction: column;
+}
+
+.referral-list__item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-sm) 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.referral-list__item:last-child {
+    border-bottom: none;
+}
+
+.referral-list__info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.referral-list__name {
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.referral-list__date {
+    font-size: var(--font-size-xs);
+    color: var(--text-tertiary);
+}
+
+.referral-list__right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+}
+
+.referral-list__status {
+    font-size: var(--font-size-xs);
+    padding: 2px 8px;
+    border-radius: var(--border-radius-full);
+    font-weight: 500;
+}
+
+.status--pending {
+    background: rgba(241, 196, 15, 0.15);
+    color: #f39c12;
+}
+
+.status--completed {
+    background: rgba(52, 152, 219, 0.15);
+    color: #2980b9;
+}
+
+.status--rewarded {
+    background: rgba(46, 204, 113, 0.15);
+    color: #27ae60;
+}
+
+.referral-list__reward {
+    font-size: var(--font-size-xs);
+    color: var(--color-success);
+    font-weight: 600;
+}
+
+.referral-list__empty {
+    text-align: center;
+    color: var(--text-tertiary);
+    padding: var(--spacing-lg);
+}
+
+/* Skeleton */
+.referral-skeleton {
+    padding: var(--spacing-md);
+}

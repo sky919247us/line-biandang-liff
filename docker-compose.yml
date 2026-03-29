@@ -1,0 +1,101 @@
+# LINE LIFF 便當訂購系統 - Docker Compose 配置
+# 使用方式：docker compose up -d
+
+services:
+  # 後端 API 服務
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: biandang-backend
+    restart: unless-stopped
+    environment:
+      - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD}@db:5432/biandang
+      - REDIS_URL=redis://redis:6379
+      - DEBUG=${DEBUG:-false}
+      - SECRET_KEY=${SECRET_KEY}
+      - LINE_CHANNEL_ID=${LINE_CHANNEL_ID}
+      - LINE_CHANNEL_SECRET=${LINE_CHANNEL_SECRET}
+      - LINE_CHANNEL_ACCESS_TOKEN=${LINE_CHANNEL_ACCESS_TOKEN}
+      - LINE_LIFF_ID=${LINE_LIFF_ID}
+      - GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY:-}
+      - GOOGLE_MAPS_ENABLED=${GOOGLE_MAPS_ENABLED:-false}
+      - STORE_LATITUDE=${STORE_LATITUDE:-24.1378}
+      - STORE_LONGITUDE=${STORE_LONGITUDE:-120.6828}
+      - STORE_ADDRESS=${STORE_ADDRESS:-台中市中區興中街20號}
+      - MAX_DELIVERY_DISTANCE_KM=${MAX_DELIVERY_DISTANCE_KM:-5}
+      - MIN_ORDER_AMOUNT=${MIN_ORDER_AMOUNT:-150}
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8000/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - biandang-network
+
+  # 前端服務
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: biandang-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - biandang-network
+
+  # PostgreSQL 資料庫
+  db:
+    image: postgres:16-alpine
+    container_name: biandang-db
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=biandang
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - biandang-network
+
+  # Redis 快取
+  redis:
+    image: redis:7-alpine
+    container_name: biandang-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - biandang-network
+
+# 持久化資料卷
+volumes:
+  postgres_data:
+  redis_data:
+
+    # 網路
+networks:
+  biandang-network:
+    driver: bridge

@@ -1,0 +1,36 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc:*)",
+      "Bash(xargs wc:*)",
+      "Bash(find \"D:/LINE Biandang LIFF/frontend/src/pages/admin\" -name \"*.tsx\" -exec wc -l {} +)",
+      "Bash(npm install:*)",
+      "Bash(npm run:*)",
+      "Bash(find 'D:/LINE Biandang LIFF/backend/app' -name *.py -newer 'D:/LINE Biandang LIFF/backend/app/api/v1/orders.py' -type f)",
+      "Bash(find 'D:/LINE Biandang LIFF/frontend/src/pages' -name *.tsx -o -name *.css -o -name *.ts)",
+      "Bash(python -m pytest tests/ -v --tb=short)",
+      "Bash(python -m pip install pytest pytest-asyncio httpx)",
+      "Bash(pip install:*)",
+      "Bash(python -m pytest tests/ -v --tb=short --ignore=tests/test_delivery_service.py)",
+      "Bash(python -m pytest tests/ --ignore=tests/test_delivery_service.py -v --tb=short)",
+      "Bash(python -m pytest tests/test_admin_broadcast.py tests/test_admin_members.py tests/test_referrals.py tests/test_stamp_cards.py tests/test_group_orders.py tests/test_admin_kds.py -v --tb=short)",
+      "Bash(python -m pytest tests/ --ignore=tests/test_delivery_service.py -v --tb=no -q)",
+      "Bash(python -m pytest tests/test_products.py::TestCategoriesAPI -v --tb=short)",
+      "Bash(python -m pytest tests/test_api.py::TestDeliveryAPI::test_calculate_delivery_fee -v --tb=long)",
+      "Bash(python -m pytest tests/test_coupon_service.py::TestCouponService::test_apply_and_revoke_coupon tests/test_inventory_service.py::TestInventoryService::test_deduct_stock_success tests/test_orders.py::TestOrderCancel::test_cancel_order_restores_stock -v --tb=short)",
+      "Bash(python -m pytest tests/ --ignore=tests/test_delivery_service.py -v --tb=short -q)",
+      "Bash(grep -l \"class.*BaseModel\\\\|class.*Base\" \"D:/LINE Biandang LIFF/backend/app/models\"/*.py)",
+      "Bash(wc -l \"D:/LINE Biandang LIFF/backend/app/services\"/*.py)",
+      "Bash(find \"D:/LINE Biandang LIFF/backend/app/models\" -type f -name \"*.py\" -exec basename {})",
+      "Bash(xargs -I {} basename {})",
+      "Bash(grep -r \"TODO\\\\|FIXME\\\\|pass$\" 'D:/LINE Biandang LIFF/backend/app/services')",
+      "Bash(python -m pytest tests/ --tb=short -q)",
+      "Bash(python -m pytest tests/test_orders.py -v --tb=short)",
+      "Bash(python -m pytest tests/ -q --tb=short)",
+      "Bash(python -m pytest tests/ -x -q)",
+      "Bash(python -m pytest tests/ -v)",
+      "Bash(find 'D:/LINE Biandang LIFF/backend/tests' -name *.py -not -path *__pycache__*)",
+      "Bash(find 'D:/LINE Biandang LIFF' \\\\\\(-name *.db -o -name *.sqlite -o -name .env \\\\\\))"
+    ]
+  }
+}

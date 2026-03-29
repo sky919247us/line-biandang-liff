@@ -1,0 +1,156 @@
+# 持續部署工作流程
+# 當推送到 main 分支時自動部署
+
+name: CD
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:  # 允許手動觸發
+
+env:
+  REGISTRY: ghcr.io
+  BACKEND_IMAGE_NAME: ${{ github.repository }}/backend
+  FRONTEND_IMAGE_NAME: ${{ github.repository }}/frontend
+
+jobs:
+  # 建置並推送 Docker 映像檔
+  build-and-push:
+    name: Build and Push Docker Images
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    
+    outputs:
+      backend-image: ${{ steps.meta-backend.outputs.tags }}
+      frontend-image: ${{ steps.meta-frontend.outputs.tags }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      # 後端映像檔
+      - name: Extract metadata (Backend)
+        id: meta-backend
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=sha,prefix=
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+      
+      - name: Build and push Backend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          push: true
+          tags: ${{ steps.meta-backend.outputs.tags }}
+          labels: ${{ steps.meta-backend.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      
+      # 前端映像檔
+      - name: Extract metadata (Frontend)
+        id: meta-frontend
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=sha,prefix=
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+      
+      - name: Build and push Frontend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          push: true
+          tags: ${{ steps.meta-frontend.outputs.tags }}
+          labels: ${{ steps.meta-frontend.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            VITE_LIFF_ID=${{ secrets.LIFF_ID }}
+            VITE_API_URL=${{ secrets.API_URL }}
+  
+  # 部署到 Railway（如果使用 Railway）
+  deploy-railway:
+    name: Deploy to Railway
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    if: ${{ vars.DEPLOY_TARGET == 'railway' }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Install Railway CLI
+        run: npm i -g @railway/cli
+      
+      - name: Deploy Backend
+        run: railway up --service backend
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        working-directory: backend
+      
+      - name: Deploy Frontend
+        run: railway up --service frontend
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        working-directory: frontend
+  
+  # 部署到 Render（如果使用 Render）
+  deploy-render:
+    name: Deploy to Render
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    if: ${{ vars.DEPLOY_TARGET == 'render' }}
+    
+    steps:
+      - name: Trigger Render Deploy Hook (Backend)
+        run: |
+          curl -X POST ${{ secrets.RENDER_BACKEND_DEPLOY_HOOK }}
+      
+      - name: Trigger Render Deploy Hook (Frontend)
+        run: |
+          curl -X POST ${{ secrets.RENDER_FRONTEND_DEPLOY_HOOK }}
+      
+      - name: Wait for deployment
+        run: sleep 60
+  
+  # 部署通知
+  notify:
+    name: Notify Deployment
+    runs-on: ubuntu-latest
+    needs: [build-and-push]
+    if: always()
+    
+    steps:
+      - name: Send LINE Notify
+        env:
+          LINE_NOTIFY_TOKEN: ${{ secrets.LINE_NOTIFY_TOKEN }}
+        if: env.LINE_NOTIFY_TOKEN != ''
+        run: |
+          STATUS="${{ needs.build-and-push.result }}"
+          MESSAGE="🚀 Deployment $STATUS
+          
+          Repository: ${{ github.repository }}
+          Branch: ${{ github.ref_name }}
+          Commit: ${{ github.sha }}"
+          
+          curl -X POST https://notify-api.line.me/api/notify \
+            -H "Authorization: Bearer $LINE_NOTIFY_TOKEN" \
+            -F "message=${MESSAGE}"
+

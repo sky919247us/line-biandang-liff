@@ -1,0 +1,143 @@
+# 持續整合工作流程
+# 在每次推送和 PR 時執行測試
+
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+env:
+  PYTHON_VERSION: "3.12"
+  NODE_VERSION: "20"
+
+jobs:
+  # 後端測試
+  backend-test:
+    name: Backend Tests
+    runs-on: ubuntu-latest
+    
+    defaults:
+      run:
+        working-directory: backend
+    
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          version: "latest"
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      
+      - name: Install dependencies
+        run: uv sync --frozen
+      
+      - name: Run linting
+        run: |
+          uv run ruff check .
+        continue-on-error: true
+      
+      - name: Run tests
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
+          SECRET_KEY: test-secret-key
+        run: |
+          uv run pytest tests/ -v --tb=short
+      
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: backend-test-results
+          path: backend/pytest-results.xml
+  
+  # 前端測試
+  frontend-test:
+    name: Frontend Tests
+    runs-on: ubuntu-latest
+    
+    defaults:
+      run:
+        working-directory: frontend
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run linting
+        run: npm run lint
+        continue-on-error: true
+      
+      - name: Run type check
+        run: npm run type-check
+        continue-on-error: true
+      
+      - name: Build
+        run: npm run build
+        env:
+          VITE_LIFF_ID: test-liff-id
+          VITE_API_URL: http://localhost:8000
+  
+  # Docker 建置測試
+  docker-build:
+    name: Docker Build
+    runs-on: ubuntu-latest
+    needs: [backend-test, frontend-test]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Build backend image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          push: false
+          tags: biandang-backend:test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      
+      - name: Build frontend image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          push: false
+          tags: biandang-frontend:test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

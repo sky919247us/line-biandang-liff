@@ -1,0 +1,204 @@
+/**
+ * 商品管理頁面樣式
+ */
+
+.admin-products__categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-lg);
+}
+
+.admin-products__category-btn {
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--border-radius-md);
+    background: var(--bg-primary);
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+    border: 1px solid var(--border-color);
+    transition: all var(--transition-fast);
+}
+
+.admin-products__category-btn:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+.admin-products__category-btn.active {
+    background: var(--color-primary);
+    color: white;
+    border-color: var(--color-primary);
+}
+
+.admin-products__name {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.admin-products__desc {
+    font-size: var(--font-size-sm);
+    color: var(--text-tertiary);
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.admin-products__limit-input {
+    width: 80px;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    font-size: var(--font-size-sm);
+    text-align: center;
+}
+
+.admin-products__limit-input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+}
+
+.admin-products__sold {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.admin-products__sold-limit {
+    color: var(--text-tertiary);
+}
+
+.admin-products__reset-btn {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--border-radius-full);
+    color: var(--text-tertiary);
+    font-size: 14px;
+    transition: all var(--transition-fast);
+}
+
+.admin-products__reset-btn:hover {
+    background: var(--bg-secondary);
+    color: var(--color-primary);
+}
+
+/* Toggle Switch */
+.admin-products__toggle {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    cursor: pointer;
+}
+
+.admin-products__toggle input {
+    display: none;
+}
+
+.admin-products__toggle-slider {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    background: var(--color-gray-300);
+    border-radius: var(--border-radius-full);
+    transition: all var(--transition-fast);
+}
+
+.admin-products__toggle-slider::before {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    background: white;
+    border-radius: var(--border-radius-full);
+    transition: all var(--transition-fast);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.admin-products__toggle input:checked+.admin-products__toggle-slider {
+    background: var(--color-success);
+}
+
+.admin-products__toggle input:checked+.admin-products__toggle-slider::before {
+    transform: translateX(20px);
+}
+
+.admin-products__toggle-label {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+}
+
+/* Modal */
+.admin-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+    padding: var(--spacing-md);
+}
+
+.admin-modal {
+    background: var(--bg-primary);
+    border-radius: var(--border-radius-lg);
+    width: 100%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-xl);
+}
+
+.admin-modal__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.admin-modal__header h3 {
+    margin: 0;
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+}
+
+.admin-modal__header button {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--border-radius-full);
+    color: var(--text-tertiary);
+}
+
+.admin-modal__header button:hover {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+.admin-modal__body {
+    padding: var(--spacing-lg);
+}
+
+.admin-modal__note {
+    text-align: center;
+    color: var(--text-tertiary);
+    font-size: var(--font-size-sm);
+    margin-top: var(--spacing-md);
+}
+
+.admin-modal__footer {
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-sm);
+}

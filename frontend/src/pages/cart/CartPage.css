@@ -1,0 +1,215 @@
+/**
+ * 購物車頁面樣式
+ */
+
+.cart-page {
+    background: var(--bg-secondary);
+}
+
+.cart-page .page-content {
+    padding-bottom: calc(180px + env(safe-area-inset-bottom));
+}
+
+/* 空購物車 */
+.cart-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-2xl);
+    text-align: center;
+    min-height: 60vh;
+}
+
+.cart-empty__icon {
+    color: var(--color-gray-300);
+}
+
+.cart-empty__title {
+    font-size: var(--font-size-xl);
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.cart-empty__description {
+    font-size: var(--font-size-md);
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-md);
+}
+
+/* 區塊 */
+.cart-section {
+    background: var(--bg-primary);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-sm);
+}
+
+.cart-section__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-md);
+}
+
+.cart-section__title {
+    font-size: var(--font-size-md);
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.cart-clear-btn {
+    font-size: var(--font-size-sm);
+    color: var(--color-error);
+}
+
+/* 取餐方式切換 */
+.order-type-toggle {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-sm);
+}
+
+.order-type-toggle__btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md);
+    background: var(--bg-secondary);
+    border: 2px solid transparent;
+    border-radius: var(--border-radius-md);
+    font-size: var(--font-size-md);
+    font-weight: 500;
+    color: var(--text-secondary);
+    transition: all var(--transition-fast);
+}
+
+.order-type-toggle__btn:hover {
+    background: var(--bg-tertiary);
+}
+
+.order-type-toggle__btn.active {
+    background: var(--color-primary-50);
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+/* 購物車項目 */
+.cart-items {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.cart-item {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+    gap: var(--spacing-sm);
+    padding-bottom: var(--spacing-md);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.cart-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.cart-item__info {
+    grid-column: 1;
+    grid-row: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.cart-item__name {
+    font-size: var(--font-size-md);
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.cart-item__customizations,
+.cart-item__notes {
+    font-size: var(--font-size-xs);
+    color: var(--text-secondary);
+}
+
+.cart-item__price {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    margin-top: var(--spacing-xs);
+}
+
+.cart-item__actions {
+    grid-column: 2;
+    grid-row: 1;
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+}
+
+.cart-item__remove {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-tertiary);
+    border-radius: var(--border-radius-full);
+    transition: all var(--transition-fast);
+}
+
+.cart-item__remove:hover {
+    background: var(--bg-secondary);
+    color: var(--color-error);
+}
+
+.cart-item__subtotal {
+    grid-column: 2;
+    grid-row: 2;
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+    color: var(--color-primary);
+    text-align: right;
+}
+
+/* 結帳區塊 */
+.cart-checkout {
+    position: fixed;
+    bottom: calc(60px + env(safe-area-inset-bottom));
+    left: 0;
+    right: 0;
+    background: var(--bg-primary);
+    padding: var(--spacing-md);
+    border-top: 1px solid var(--border-color);
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.cart-checkout__summary {
+    margin-bottom: var(--spacing-md);
+}
+
+.cart-checkout__row {
+    display: flex;
+    justify-content: space-between;
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-xs);
+}
+
+.cart-checkout__row--total {
+    font-size: var(--font-size-md);
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-top: var(--spacing-sm);
+    padding-top: var(--spacing-sm);
+    border-top: 1px solid var(--border-color);
+}
+
+.cart-checkout__total {
+    font-size: var(--font-size-xl);
+    font-weight: 700;
+    color: var(--color-primary);
+}

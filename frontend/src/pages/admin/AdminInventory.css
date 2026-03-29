@@ -1,0 +1,118 @@
+/**
+ * 庫存管理頁面樣式
+ */
+
+.admin-inventory__alerts {
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+}
+
+.admin-inventory__alerts h3 {
+    margin: 0 0 var(--spacing-md) 0;
+    font-size: var(--font-size-md);
+    color: #c2410c;
+}
+
+.admin-inventory__alert-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+}
+
+.admin-inventory__alert-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--border-radius-md);
+    font-size: var(--font-size-sm);
+}
+
+.admin-inventory__alert-item--low {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.admin-inventory__alert-item--out {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.admin-inventory__alert-name {
+    font-weight: 600;
+}
+
+.admin-inventory__alert-stock {
+    color: inherit;
+    opacity: 0.8;
+}
+
+.admin-inventory__alert-status {
+    font-weight: 600;
+}
+
+/* 庫存數值 */
+.admin-inventory__stock {
+    font-weight: 600;
+    font-size: var(--font-size-lg);
+}
+
+.admin-inventory__stock--normal {
+    color: var(--color-success);
+}
+
+.admin-inventory__stock--low {
+    color: var(--color-warning);
+}
+
+.admin-inventory__stock--out {
+    color: var(--color-error);
+}
+
+/* 狀態標籤 */
+.admin-inventory__status {
+    display: inline-flex;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--border-radius-full);
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+}
+
+.admin-inventory__status--normal {
+    background: #dcfce7;
+    color: #16a34a;
+}
+
+.admin-inventory__status--low {
+    background: #fef3c7;
+    color: #d97706;
+}
+
+.admin-inventory__status--out {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+/* 補貨表單 */
+.admin-inventory__add-form {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.admin-inventory__add-form input {
+    width: 80px;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    font-size: var(--font-size-sm);
+    text-align: center;
+}
+
+.admin-inventory__add-form input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+}

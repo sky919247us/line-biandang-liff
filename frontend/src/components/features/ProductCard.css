@@ -1,0 +1,186 @@
+/**
+ * ProductCard 商品卡片樣式
+ */
+
+/* 卡片基礎樣式在 card.css 中定義 */
+
+.product-card--disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.product-card__original-price {
+    text-decoration: line-through;
+    color: var(--text-tertiary);
+    font-size: var(--font-size-sm);
+    margin-right: 4px;
+}
+
+.product-card__image-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--color-primary-50) 0%, var(--color-gray-100) 100%);
+    color: var(--color-primary);
+}
+
+/* Modal 覆蓋層 */
+.product-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-modal);
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: flex-end;
+    animation: fadeIn var(--transition-fast) ease-out;
+}
+
+/* Modal 內容 */
+.product-modal {
+    width: 100%;
+    max-height: 85vh;
+    background: var(--bg-primary);
+    border-radius: var(--border-radius-xl) var(--border-radius-xl) 0 0;
+    padding: var(--spacing-lg);
+    padding-bottom: calc(var(--spacing-lg) + env(safe-area-inset-bottom));
+    overflow-y: auto;
+    animation: slideUp var(--transition-normal) ease-out;
+}
+
+.product-modal__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-md);
+}
+
+.product-modal__title {
+    font-size: var(--font-size-xl);
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.product-modal__close {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--border-radius-full);
+    color: var(--text-secondary);
+    transition: all var(--transition-fast);
+}
+
+.product-modal__close:hover {
+    background: var(--bg-secondary);
+}
+
+.product-modal__info {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--spacing-md);
+    padding-bottom: var(--spacing-md);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.product-modal__description {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+.product-modal__price {
+    font-size: var(--font-size-xl);
+    font-weight: 700;
+    color: var(--color-primary);
+    white-space: nowrap;
+}
+
+.product-modal__section {
+    padding: var(--spacing-md) 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.product-modal__section-title {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-sm);
+}
+
+/* 客製化選項 */
+.product-modal__options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+}
+
+.product-modal__option {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-md);
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-full);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.product-modal__option input {
+    display: none;
+}
+
+.product-modal__option.active {
+    background: var(--color-primary-100);
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+.product-modal__option-name {
+    font-size: var(--font-size-sm);
+}
+
+.product-modal__option-price {
+    font-size: var(--font-size-xs);
+    color: var(--color-primary);
+    font-weight: 500;
+}
+
+/* 備註 */
+.product-modal__notes {
+    width: 100%;
+    padding: var(--spacing-sm);
+    font-size: var(--font-size-sm);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    resize: none;
+    outline: none;
+    transition: border-color var(--transition-fast);
+}
+
+.product-modal__notes:focus {
+    border-color: var(--color-primary);
+}
+
+/* 數量選擇 */
+.product-modal__quantity {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-md) 0;
+}
+
+.product-modal__quantity-label {
+    font-size: var(--font-size-md);
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+/* 加入購物車按鈕 */
+.product-modal__add-btn {
+    margin-top: var(--spacing-md);
+}

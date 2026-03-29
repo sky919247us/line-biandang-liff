@@ -1,0 +1,225 @@
+/**
+ * 會員忠誠度頁面樣式
+ */
+
+.loyalty-card {
+    background: var(--bg-primary);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-lg);
+    border: 2px solid var(--border-color);
+    margin-bottom: var(--spacing-md);
+}
+
+.loyalty-card__tier {
+    margin-bottom: var(--spacing-md);
+}
+
+.loyalty-card__tier-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: var(--border-radius-full);
+    color: white;
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+}
+
+.loyalty-card__balance {
+    text-align: center;
+    margin-bottom: var(--spacing-lg);
+}
+
+.loyalty-card__balance-label {
+    display: block;
+    font-size: var(--font-size-sm);
+    color: var(--text-tertiary);
+    margin-bottom: var(--spacing-xs);
+}
+
+.loyalty-card__balance-value {
+    font-size: 48px;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1;
+}
+
+.loyalty-card__balance-unit {
+    font-size: var(--font-size-lg);
+    color: var(--text-secondary);
+    margin-left: var(--spacing-xs);
+}
+
+.loyalty-card__stats {
+    display: flex;
+    justify-content: space-around;
+    text-align: center;
+    padding-top: var(--spacing-md);
+    border-top: 1px solid var(--border-color);
+}
+
+.loyalty-card__stat-label {
+    display: block;
+    font-size: var(--font-size-xs);
+    color: var(--text-tertiary);
+    margin-bottom: 2px;
+}
+
+.loyalty-card__stat-value {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+/* Progress */
+.loyalty-progress {
+    background: var(--bg-primary);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+}
+
+.loyalty-progress__header {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-sm);
+}
+
+.loyalty-progress__bar {
+    height: 8px;
+    background: var(--bg-secondary);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.loyalty-progress__fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.5s ease;
+}
+
+/* Rules */
+.loyalty-rules {
+    background: var(--bg-primary);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+}
+
+.loyalty-rules h3 {
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    margin-bottom: var(--spacing-sm);
+}
+
+.loyalty-rules ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.loyalty-rules li {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    padding: var(--spacing-xs) 0;
+    padding-left: var(--spacing-md);
+    position: relative;
+}
+
+.loyalty-rules li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-primary);
+    transform: translateY(-50%);
+}
+
+/* History */
+.loyalty-history {
+    background: var(--bg-primary);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-md);
+}
+
+.loyalty-history h3 {
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    margin-bottom: var(--spacing-md);
+}
+
+.loyalty-history__list {
+    display: flex;
+    flex-direction: column;
+}
+
+.loyalty-history__item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-sm) 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.loyalty-history__item:last-child {
+    border-bottom: none;
+}
+
+.loyalty-history__info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.loyalty-history__type {
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.loyalty-history__desc {
+    font-size: var(--font-size-xs);
+    color: var(--text-tertiary);
+}
+
+.loyalty-history__right {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.loyalty-history__points {
+    font-weight: 600;
+    font-size: var(--font-size-base);
+}
+
+.loyalty-history__points.positive {
+    color: var(--color-success);
+}
+
+.loyalty-history__points.negative {
+    color: var(--color-error);
+}
+
+.loyalty-history__date {
+    font-size: var(--font-size-xs);
+    color: var(--text-tertiary);
+}
+
+.loyalty-history__empty {
+    text-align: center;
+    color: var(--text-tertiary);
+    padding: var(--spacing-lg);
+}
+
+.loyalty-skeleton {
+    padding: var(--spacing-md);
+}
+
+.loyalty-empty {
+    text-align: center;
+    padding: var(--spacing-xl);
+    color: var(--text-tertiary);
+}

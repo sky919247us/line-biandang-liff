@@ -1,0 +1,35 @@
+# 環境變數（包含密鑰，絕不可提交）
+.env
+.env.local
+.env.production
+
+# 資料庫
+*.db
+*.sqlite
+*.sqlite3
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+*.egg
+
+# Node
+node_modules/
+dist/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# 專案特定
+compact-notes/
+*.log
