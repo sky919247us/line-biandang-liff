@@ -38,6 +38,6 @@ ENV PORT=8000
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:${PORT}/health || exit 1
 
-# 啟動時執行遷移 + 啟動伺服器
-CMD uv run alembic upgrade head && \
+# 啟動時初始化資料庫 + 啟動伺服器
+CMD uv run python -c "from app.core.database import init_db; init_db(); print('DB initialized')" && \
     uv run uvicorn app.main:app --host 0.0.0.0 --port ${PORT}
