@@ -4,12 +4,22 @@
  * 顯示所有商品列表，支援分類過濾和搜尋
  */
 import { useState, useEffect, useCallback } from 'react';
+import axios from 'axios';
 import { Header } from '../../components/layout/Header';
 import { BottomNav } from '../../components/layout/BottomNav';
 import { ProductCard } from '../../components/features/ProductCard';
 import { productApi } from '../../services/api';
 import type { Product, Category } from '../../types';
 import './MenuPage.css';
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api/v1';
+
+interface StoreStatus {
+    is_open: boolean;
+    message: string;
+    open_time: string;
+    close_time: string;
+}
 
 export function MenuPage() {
     const [products, setProducts] = useState<Product[]>([]);
@@ -18,16 +28,22 @@ export function MenuPage() {
     const [searchQuery, setSearchQuery] = useState('');
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [storeStatus, setStoreStatus] = useState<StoreStatus | null>(null);
 
     // 載入分類和商品
     const loadData = useCallback(async () => {
         setIsLoading(true);
         setError(null);
         try {
-            const [categoriesData, productsData] = await Promise.all([
+            // 同時載入營業狀態和商品資料
+            const [statusRes, categoriesData, productsData] = await Promise.all([
+                axios.get(`${API_BASE_URL}/store/status`).catch(() => null),
                 productApi.getCategories(),
                 productApi.getProducts({ limit: 50 }),
             ]);
+            if (statusRes?.data) {
+                setStoreStatus(statusRes.data);
+            }
             setCategories(categoriesData);
             setProducts(productsData.items);
         } catch (error) {
@@ -55,6 +71,27 @@ export function MenuPage() {
             <Header title="菜單" showBack={false} />
 
             <main className="page-content">
+                {/* 非營業時間提示 */}
+                {storeStatus && !storeStatus.is_open && (
+                    <div style={{
+                        background: 'linear-gradient(135deg, #ff6b35, #f7931e)',
+                        color: '#fff',
+                        padding: '12px 16px',
+                        borderRadius: '12px',
+                        marginBottom: '12px',
+                        textAlign: 'center',
+                        fontSize: '14px',
+                        fontWeight: 600,
+                    }}>
+                        <div style={{ fontSize: '16px', marginBottom: '4px' }}>
+                            {storeStatus.message}
+                        </div>
+                        <div style={{ opacity: 0.9, fontSize: '13px' }}>
+                            營業時間：{storeStatus.open_time} - {storeStatus.close_time}
+                        </div>
+                    </div>
+                )}
+
                 {/* 搜尋欄 */}
                 <div className="menu-search">
                     <div className="menu-search__input-wrapper">

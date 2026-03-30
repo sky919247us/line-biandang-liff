@@ -106,6 +106,28 @@ from app.api.v1 import referrals
 app.include_router(referrals.router, prefix=settings.api_v1_prefix)
 
 
+# 公開店家狀態 API（不需登入）
+@app.get(f"{settings.api_v1_prefix}/store/status", tags=["店家"])
+async def get_store_status():
+    """
+    取得店家營業狀態（公開 API）
+
+    前端用此判斷是否可以點餐
+    """
+    from app.services.order_service import validate_business_hours
+    from app.api.v1.admin.settings import STORE_SETTINGS
+
+    is_open, message = validate_business_hours()
+    return {
+        "is_open": is_open,
+        "message": message if not is_open else "",
+        "store_name": STORE_SETTINGS.get("store_name", ""),
+        "open_time": STORE_SETTINGS.get("open_time", "10:00"),
+        "close_time": STORE_SETTINGS.get("close_time", "16:30"),
+        "closed_days": STORE_SETTINGS.get("closed_days", []),
+    }
+
+
 # 根路徑
 @app.get("/", tags=["系統"])
 async def root():

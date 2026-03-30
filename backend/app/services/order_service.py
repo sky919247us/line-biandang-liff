@@ -48,28 +48,50 @@ async def send_order_status_notification(
     return True
 
 
+def get_store_settings():
+    """取得管理後台的店家設定（若已載入）"""
+    try:
+        from app.api.v1.admin.settings import STORE_SETTINGS
+        return STORE_SETTINGS
+    except Exception:
+        return None
+
+
 def validate_business_hours() -> tuple[bool, str]:
     """
     檢查是否在營業時間內
+
+    優先使用管理後台設定，否則使用 config 預設值
 
     Returns:
         (是否在營業時間, 錯誤訊息)
     """
     now = datetime.now()
 
-    # 週末不營業
-    if now.weekday() >= 5:
-        return False, "週末公休，請於平日訂購"
+    # 取得設定
+    store = get_store_settings()
+    open_time = store["open_time"] if store else settings.business_hours_start
+    close_time = store["close_time"] if store else settings.business_hours_end
+    closed_days = store.get("closed_days", []) if store else []
 
-    # 解析營業時間設定
-    start_h, start_m = map(int, settings.business_hours_start.split(":"))
-    end_h, end_m = map(int, settings.business_hours_end.split(":"))
+    # 檢查公休日
+    day_map = {
+        0: "monday", 1: "tuesday", 2: "wednesday",
+        3: "thursday", 4: "friday", 5: "saturday", 6: "sunday",
+    }
+    today_name = day_map.get(now.weekday(), "")
+    if today_name in closed_days:
+        return False, "今日公休，請於營業日再訂購"
+
+    # 解析營業時間
+    start_h, start_m = map(int, open_time.split(":"))
+    end_h, end_m = map(int, close_time.split(":"))
 
     current_minutes = now.hour * 60 + now.minute
     start_minutes = start_h * 60 + start_m
     end_minutes = end_h * 60 + end_m
 
     if current_minutes < start_minutes or current_minutes > end_minutes:
-        return False, f"目前不在營業時間內（{settings.business_hours_start} - {settings.business_hours_end}）"
+        return False, f"目前不在營業時間內（{open_time} - {close_time}）"
 
     return True, ""

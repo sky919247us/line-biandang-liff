@@ -194,6 +194,15 @@ async def create_order(
     Returns:
         OrderResponse: 建立的訂單
     """
+    # 檢查營業時間
+    from app.services.order_service import validate_business_hours
+    is_open, closed_msg = validate_business_hours()
+    if not is_open:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=closed_msg
+        )
+
     # 檢查每日訂單上限
     today_count = get_today_order_count(db)
     if today_count >= settings.daily_order_limit:
