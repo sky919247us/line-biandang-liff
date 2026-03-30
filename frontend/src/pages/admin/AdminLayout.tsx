@@ -1,54 +1,94 @@
 /**
  * 管理後台 - 主佈局
  */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { initializeLiff, getAccessToken, login as liffLogin, isLoggedIn as liffIsLoggedIn } from '../../services/liff';
+import { authApi } from '../../services/api';
+import { useAuthStore } from '../../stores/authStore';
 import './AdminLayout.css';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api/v1';
-const LIFF_URL = 'https://liff.line.me/2009637072-d5vNxNR8';
 
 type AuthState = 'loading' | 'ok' | 'no_token' | 'not_admin' | 'error';
 
 export function AdminLayout() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [authState, setAuthState] = useState<AuthState>('loading');
+    const [statusMsg, setStatusMsg] = useState('驗證中...');
     const navigate = useNavigate();
+    const setAuth = useAuthStore((state) => state.setAuth);
+
+    const verifyAdmin = useCallback(async (token: string) => {
+        try {
+            const res = await axios.get(`${API_BASE_URL}/auth/me`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (res.data.role === 'admin') {
+                setAuthState('ok');
+            } else {
+                setAuthState('not_admin');
+            }
+        } catch (err: unknown) {
+            if (axios.isAxiosError(err) && err.response?.status === 401) {
+                localStorage.removeItem('access_token');
+                setAuthState('no_token');
+            } else if (axios.isAxiosError(err) && err.response?.status === 403) {
+                setAuthState('not_admin');
+            } else {
+                setAuthState('error');
+            }
+        }
+    }, []);
 
     useEffect(() => {
-        const token = localStorage.getItem('access_token');
-        if (!token) {
-            setAuthState('no_token');
-            return;
-        }
+        const checkAuth = async () => {
+            // 1. 先檢查是否已有有效的後端 JWT
+            const existingToken = localStorage.getItem('access_token');
+            if (existingToken) {
+                await verifyAdmin(existingToken);
+                return;
+            }
 
-        axios.get(`${API_BASE_URL}/auth/me`, {
-            headers: { Authorization: `Bearer ${token}` }
-        })
-            .then((res) => {
-                if (res.data.role === 'admin') {
-                    setAuthState('ok');
-                } else {
-                    setAuthState('not_admin');
+            // 2. 沒有 token，嘗試用 LIFF 登入
+            setStatusMsg('正在初始化 LINE 登入...');
+            const liffState = await initializeLiff();
+
+            if (liffState.isLoggedIn && liffIsLoggedIn()) {
+                // LIFF 已登入，交換後端 JWT
+                setStatusMsg('正在驗證身份...');
+                const lineToken = getAccessToken();
+                if (lineToken) {
+                    try {
+                        const result = await authApi.login(lineToken);
+                        setAuth(result.user, result.accessToken);
+                        await verifyAdmin(result.accessToken);
+                        return;
+                    } catch {
+                        setAuthState('error');
+                        return;
+                    }
                 }
-            })
-            .catch((err) => {
-                if (err.response?.status === 401) {
-                    localStorage.removeItem('access_token');
-                    setAuthState('no_token');
-                } else if (err.response?.status === 403) {
-                    setAuthState('not_admin');
-                } else {
-                    setAuthState('error');
-                }
-            });
-    }, []);
+            }
+
+            // 3. LIFF 未登入，顯示登入按鈕
+            setAuthState('no_token');
+        };
+
+        checkAuth();
+    }, [verifyAdmin, setAuth]);
+
+    const handleLineLogin = () => {
+        // 用 LIFF login 並重導回當前 /admin 頁面
+        const adminUrl = window.location.href;
+        liffLogin(adminUrl);
+    };
 
     if (authState === 'loading') {
         return (
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', flexDirection: 'column', gap: '16px' }}>
-                <div style={{ fontSize: '18px', color: '#666' }}>驗證中...</div>
+                <div style={{ fontSize: '18px', color: '#666' }}>{statusMsg}</div>
             </div>
         );
     }
@@ -58,12 +98,12 @@ export function AdminLayout() {
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', flexDirection: 'column', gap: '16px', padding: '20px', textAlign: 'center' }}>
                 <h2 style={{ margin: 0 }}>請先登入</h2>
                 <p style={{ color: '#666', margin: 0 }}>管理後台需要透過 LINE 登入才能使用</p>
-                <a
-                    href={LIFF_URL}
-                    style={{ display: 'inline-block', padding: '12px 24px', backgroundColor: '#06C755', color: '#fff', borderRadius: '8px', textDecoration: 'none', fontWeight: 'bold' }}
+                <button
+                    onClick={handleLineLogin}
+                    style={{ padding: '12px 24px', backgroundColor: '#06C755', color: '#fff', borderRadius: '8px', border: 'none', cursor: 'pointer', fontWeight: 'bold', fontSize: '16px' }}
                 >
                     透過 LINE 登入
-                </a>
+                </button>
             </div>
         );
     }

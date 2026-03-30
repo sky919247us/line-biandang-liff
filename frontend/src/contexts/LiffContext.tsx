@@ -7,6 +7,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import * as liffService from '../services/liff';
 import { useAuthStore } from '../stores/authStore';
+import { authApi } from '../services/api';
 
 interface LiffContextType {
     isInitialized: boolean;
@@ -31,6 +32,7 @@ export function LiffProvider({ children }: LiffProviderProps) {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<Error | null>(null);
 
+    const setAuth = useAuthStore((state) => state.setAuth);
     const setUser = useAuthStore((state) => state.setUser);
     const setToken = useAuthStore((state) => state.setToken);
 
@@ -45,22 +47,30 @@ export function LiffProvider({ children }: LiffProviderProps) {
                 setIsInClient(state.isInClient);
                 setError(state.error);
 
-                // 如果已登入，取得使用者資訊
+                // 如果已登入，取得使用者資訊並交換後端 JWT
                 if (state.isLoggedIn) {
-                    const profile = await liffService.getProfile();
-                    const accessToken = liffService.getAccessToken();
+                    const lineAccessToken = liffService.getAccessToken();
 
-                    if (profile && accessToken) {
-                        // 設定使用者資訊到 store
-                        setUser({
-                            id: profile.userId,
-                            lineUserId: profile.userId,
-                            displayName: profile.displayName,
-                            pictureUrl: profile.pictureUrl || null,
-                            phone: null,
-                            defaultAddress: null,
-                        });
-                        setToken(accessToken);
+                    if (lineAccessToken) {
+                        try {
+                            // 用 LINE access token 向後端交換 JWT
+                            const result = await authApi.login(lineAccessToken);
+                            setAuth(result.user, result.accessToken);
+                        } catch (err) {
+                            console.error('後端認證失敗，使用 LINE profile 作為備用:', err);
+                            // 備用：至少存 LINE profile
+                            const profile = await liffService.getProfile();
+                            if (profile) {
+                                setUser({
+                                    id: profile.userId,
+                                    lineUserId: profile.userId,
+                                    displayName: profile.displayName,
+                                    pictureUrl: profile.pictureUrl || null,
+                                    phone: null,
+                                    defaultAddress: null,
+                                });
+                            }
+                        }
                     }
                 }
             } catch (err) {
