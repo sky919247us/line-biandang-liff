@@ -68,7 +68,7 @@ export function AdminMembers() {
                 headers: getAuthHeaders(),
                 params: { search, skip, limit, sort_by: sortBy },
             });
-            setMembers(res.data.items);
+            setMembers(res.data.members || res.data.items || []);
             setTotal(res.data.total);
         } catch (err) {
             console.error('Failed to fetch members:', err);
