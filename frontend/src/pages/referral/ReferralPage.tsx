@@ -59,6 +59,7 @@ export function ReferralPage() {
     const [copySuccess, setCopySuccess] = useState(false);
     const [copyLinkSuccess, setCopyLinkSuccess] = useState(false);
     const [applyMessage, setApplyMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         loadData();
@@ -76,21 +77,7 @@ export function ReferralPage() {
             setReferrals(referralsRes.data);
         } catch (err) {
             console.error('載入推薦資料失敗:', err);
-            // Mock data for development
-            setCodeData({
-                referral_code: 'REF-AB12CD',
-                share_link: 'https://liff.line.me/?referral=REF-AB12CD',
-            });
-            setReferrals({
-                total: 3,
-                completed: 2,
-                rewarded: 1,
-                referrals: [
-                    { id: '1', referred_name: '小明', status: 'rewarded', referrer_reward_type: 'points', referrer_reward_value: '50', created_at: new Date().toISOString(), completed_at: new Date().toISOString() },
-                    { id: '2', referred_name: '小華', status: 'completed', referrer_reward_type: null, referrer_reward_value: null, created_at: new Date(Date.now() - 86400000).toISOString(), completed_at: null },
-                    { id: '3', referred_name: '小美', status: 'pending', referrer_reward_type: null, referrer_reward_value: null, created_at: new Date(Date.now() - 2 * 86400000).toISOString(), completed_at: null },
-                ],
-            });
+            setError('載入推薦資料失敗，請稍後再試');
         } finally {
             setIsLoading(false);
         }

@@ -1,126 +1,13 @@
 /**
  * 管理後台 - 訂單管理頁面
  */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import type { Order, OrderStatus } from '../../types';
+import type { OrderStatus } from '../../types';
+import { getOrders, updateOrderStatus, cancelOrder } from '../../services/adminApi';
+import type { Order } from '../../services/adminApi';
 import '../admin/AdminLayout.css';
 import './AdminOrders.css';
-
-// 模擬訂單資料
-const mockOrders: Order[] = [
-    {
-        id: '1',
-        orderNumber: 'ORD-20260205-001',
-        orderType: 'pickup',
-        status: 'pending',
-        subtotal: 240,
-        deliveryFee: 0,
-        discount: 0,
-        total: 240,
-        deliveryAddress: null,
-        contactName: '王小明',
-        contactPhone: '0912-345-678',
-        pickupTime: '12:00',
-        notes: '少飯',
-        items: [
-            { id: '1', productId: 'chicken-1', productName: '戰斧雞腿', quantity: 2, unitPrice: 120, subtotal: 240, customizations: [{ id: 'c1', name: '少飯', price: 0 }], notes: null }
-        ],
-        tableNumber: null,
-        pickupNumber: null,
-        createdAt: '2026-02-05T10:30:00Z',
-        updatedAt: '2026-02-05T10:30:00Z',
-    },
-    {
-        id: '2',
-        orderNumber: 'ORD-20260205-002',
-        orderType: 'delivery',
-        status: 'confirmed',
-        subtotal: 380,
-        deliveryFee: 30,
-        discount: 0,
-        total: 410,
-        deliveryAddress: '台中市中區某某路100號',
-        contactName: '李小華',
-        contactPhone: '0923-456-789',
-        pickupTime: null,
-        notes: null,
-        items: [
-            { id: '2', productId: 'pork-5', productName: '五告厚豬排', quantity: 2, unitPrice: 130, subtotal: 260, customizations: null, notes: null },
-            { id: '3', productId: 'chicken-2', productName: '醬燒揚雞', quantity: 1, unitPrice: 120, subtotal: 120, customizations: null, notes: null }
-        ],
-        tableNumber: null,
-        pickupNumber: null,
-        createdAt: '2026-02-05T10:45:00Z',
-        updatedAt: '2026-02-05T10:50:00Z',
-    },
-    {
-        id: '3',
-        orderNumber: 'ORD-20260205-003',
-        orderType: 'pickup',
-        status: 'preparing',
-        subtotal: 150,
-        deliveryFee: 0,
-        discount: 0,
-        total: 150,
-        deliveryAddress: null,
-        contactName: '張小花',
-        contactPhone: '0934-567-890',
-        pickupTime: '12:30',
-        notes: '加辣',
-        items: [
-            { id: '4', productId: 'beef-1', productName: '牛逼菲力', quantity: 1, unitPrice: 150, subtotal: 150, customizations: [{ id: 'c2', name: '加辣', price: 0 }], notes: null }
-        ],
-        tableNumber: null,
-        pickupNumber: null,
-        createdAt: '2026-02-05T11:00:00Z',
-        updatedAt: '2026-02-05T11:10:00Z',
-    },
-    {
-        id: '4',
-        orderNumber: 'ORD-20260205-004',
-        orderType: 'pickup',
-        status: 'ready',
-        subtotal: 120,
-        deliveryFee: 0,
-        discount: 0,
-        total: 120,
-        deliveryAddress: null,
-        contactName: '陳小姐',
-        contactPhone: '0945-678-901',
-        pickupTime: '11:30',
-        notes: null,
-        items: [
-            { id: '5', productId: 'pork-1', productName: '相撲豬太郎', quantity: 1, unitPrice: 120, subtotal: 120, customizations: null, notes: null }
-        ],
-        tableNumber: null,
-        pickupNumber: null,
-        createdAt: '2026-02-05T09:30:00Z',
-        updatedAt: '2026-02-05T11:20:00Z',
-    },
-    {
-        id: '5',
-        orderNumber: 'ORD-20260204-010',
-        orderType: 'delivery',
-        status: 'completed',
-        subtotal: 360,
-        deliveryFee: 30,
-        discount: 0,
-        total: 390,
-        deliveryAddress: '台中市北區某某街50號',
-        contactName: '林先生',
-        contactPhone: '0956-789-012',
-        pickupTime: null,
-        notes: null,
-        items: [
-            { id: '6', productId: 'pork-6', productName: '藍帶豬排', quantity: 2, unitPrice: 180, subtotal: 360, customizations: null, notes: null }
-        ],
-        tableNumber: null,
-        pickupNumber: null,
-        createdAt: '2026-02-04T12:00:00Z',
-        updatedAt: '2026-02-04T13:00:00Z',
-    },
-];
 
 const statusOptions: { value: OrderStatus | 'all'; label: string }[] = [
     { value: 'all', label: '全部' },
@@ -167,17 +54,37 @@ export function AdminOrders() {
     const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
     const [searchQuery, setSearchQuery] = useState('');
     const [orderTypeFilter, setOrderTypeFilter] = useState<string>('all');
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
-        // 模擬載入資料
-        setOrders(mockOrders);
+    const fetchOrders = useCallback(async (status?: OrderStatus | 'all') => {
+        setLoading(true);
+        setError(null);
+        try {
+            const params = status && status !== 'all' ? { status } : {};
+            const result = await getOrders(params);
+            setOrders(result.orders);
+        } catch (err) {
+            console.error('載入訂單失敗:', err);
+            setError('載入訂單失敗，請稍後再試');
+        } finally {
+            setLoading(false);
+        }
     }, []);
 
+    // Load orders on mount
+    useEffect(() => {
+        fetchOrders();
+    }, [fetchOrders]);
+
+    // Re-fetch when status filter changes
+    useEffect(() => {
+        fetchOrders(statusFilter);
+    }, [statusFilter, fetchOrders]);
+
+    // Client-side filtering for order type and search
     useEffect(() => {
         let filtered = orders;
-        if (statusFilter !== 'all') {
-            filtered = filtered.filter(o => o.status === statusFilter);
-        }
         if (orderTypeFilter !== 'all') {
             filtered = filtered.filter(o => o.orderType === orderTypeFilter);
         }
@@ -190,7 +97,7 @@ export function AdminOrders() {
             );
         }
         setFilteredOrders(filtered);
-    }, [orders, statusFilter, orderTypeFilter, searchQuery]);
+    }, [orders, orderTypeFilter, searchQuery]);
 
     const formatDateTime = (dateString: string) => {
         const date = new Date(dateString);
@@ -202,16 +109,44 @@ export function AdminOrders() {
         });
     };
 
-    const handleStatusChange = (orderId: string, newStatus: OrderStatus) => {
-        setOrders(prev => prev.map(order => {
-            if (order.id === orderId) {
-                return { ...order, status: newStatus, updatedAt: new Date().toISOString() };
+    const handleStatusChange = async (orderId: string, newStatus: OrderStatus) => {
+        try {
+            await updateOrderStatus(orderId, newStatus);
+            // Update local state
+            setOrders(prev => prev.map(order => {
+                if (order.id === orderId) {
+                    return { ...order, status: newStatus, updatedAt: new Date().toISOString() };
+                }
+                return order;
+            }));
+            if (selectedOrder?.id === orderId) {
+                setSelectedOrder(prev => prev ? { ...prev, status: newStatus } : null);
             }
-            return order;
-        }));
+        } catch (err) {
+            console.error('更新訂單狀態失敗:', err);
+            alert('更新訂單狀態失敗，請稍後再試');
+        }
+    };
 
-        if (selectedOrder?.id === orderId) {
-            setSelectedOrder(prev => prev ? { ...prev, status: newStatus } : null);
+    const handleCancelOrder = async (orderId: string) => {
+        if (!window.confirm('確定要取消此訂單嗎？此操作無法復原。')) {
+            return;
+        }
+        try {
+            await cancelOrder(orderId);
+            // Update local state
+            setOrders(prev => prev.map(order => {
+                if (order.id === orderId) {
+                    return { ...order, status: 'cancelled', updatedAt: new Date().toISOString() };
+                }
+                return order;
+            }));
+            if (selectedOrder?.id === orderId) {
+                setSelectedOrder(prev => prev ? { ...prev, status: 'cancelled' } : null);
+            }
+        } catch (err) {
+            console.error('取消訂單失敗:', err);
+            alert('取消訂單失敗，請稍後再試');
         }
     };
 
@@ -278,6 +213,16 @@ export function AdminOrders() {
                 ))}
             </div>
 
+            {/* Error state */}
+            {error && (
+                <div className="admin-card" style={{ textAlign: 'center', padding: 24, color: 'var(--color-danger)' }}>
+                    <p>{error}</p>
+                    <button className="admin-action-btn admin-action-btn--primary" onClick={() => fetchOrders(statusFilter)} style={{ marginTop: 12 }}>
+                        重試
+                    </button>
+                </div>
+            )}
+
             <div className="admin-orders__content">
                 {/* 訂單列表 */}
                 <div className="admin-card admin-orders__list">
@@ -295,7 +240,15 @@ export function AdminOrders() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {filteredOrders.length > 0 ? (
+                                {loading ? (
+                                    <tr>
+                                        <td colSpan={7}>
+                                            <div className="admin-empty">
+                                                <p>載入中...</p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ) : filteredOrders.length > 0 ? (
                                     filteredOrders.map((order) => (
                                         <tr
                                             key={order.id}
@@ -314,7 +267,18 @@ export function AdminOrders() {
                                             </td>
                                             <td>
                                                 <div className="admin-actions">
-                                                    {nextStatusMap[order.status] && (
+                                                    {order.status === 'pending' && (
+                                                        <button
+                                                            className="admin-action-btn admin-action-btn--primary"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                handleStatusChange(order.id, 'confirmed');
+                                                            }}
+                                                        >
+                                                            確認
+                                                        </button>
+                                                    )}
+                                                    {order.status !== 'pending' && nextStatusMap[order.status] && (
                                                         <button
                                                             className="admin-action-btn admin-action-btn--primary"
                                                             onClick={(e) => {
@@ -322,10 +286,20 @@ export function AdminOrders() {
                                                                 handleStatusChange(order.id, nextStatusMap[order.status]!);
                                                             }}
                                                         >
-                                                            {order.status === 'pending' ? '確認' :
-                                                                order.status === 'confirmed' ? '開始備餐' :
-                                                                    order.status === 'preparing' ? '備餐完成' :
-                                                                        order.status === 'ready' || order.status === 'delivering' ? '完成' : ''}
+                                                            {order.status === 'confirmed' ? '開始備餐' :
+                                                                order.status === 'preparing' ? '備餐完成' :
+                                                                    order.status === 'ready' || order.status === 'delivering' ? '完成' : ''}
+                                                        </button>
+                                                    )}
+                                                    {order.status !== 'cancelled' && order.status !== 'completed' && (
+                                                        <button
+                                                            className="admin-action-btn admin-action-btn--danger"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                handleCancelOrder(order.id);
+                                                            }}
+                                                        >
+                                                            取消
                                                         </button>
                                                     )}
                                                 </div>
@@ -413,6 +387,11 @@ export function AdminOrders() {
                                                 {item.customizations.map(c => c.name).join('、')}
                                             </div>
                                         )}
+                                        {item.notes && (
+                                            <div className="admin-orders__item-options">
+                                                備註：{item.notes}
+                                            </div>
+                                        )}
                                     </div>
                                 ))}
                                 {selectedOrder.notes && (
@@ -447,17 +426,28 @@ export function AdminOrders() {
                                 </div>
                             </div>
 
-                            {nextStatusMap[selectedOrder.status] && (
-                                <button
-                                    className="btn btn-primary btn-lg btn-full"
-                                    onClick={() => handleStatusChange(selectedOrder.id, nextStatusMap[selectedOrder.status]!)}
-                                >
-                                    {selectedOrder.status === 'pending' ? '確認訂單' :
-                                        selectedOrder.status === 'confirmed' ? '開始備餐' :
-                                            selectedOrder.status === 'preparing' ? '備餐完成' :
-                                                selectedOrder.status === 'ready' || selectedOrder.status === 'delivering' ? '完成訂單' : ''}
-                                </button>
-                            )}
+                            <div style={{ display: 'flex', gap: 8, marginTop: 16 }}>
+                                {nextStatusMap[selectedOrder.status] && (
+                                    <button
+                                        className="btn btn-primary btn-lg btn-full"
+                                        onClick={() => handleStatusChange(selectedOrder.id, nextStatusMap[selectedOrder.status]!)}
+                                    >
+                                        {selectedOrder.status === 'pending' ? '確認訂單' :
+                                            selectedOrder.status === 'confirmed' ? '開始備餐' :
+                                                selectedOrder.status === 'preparing' ? '備餐完成' :
+                                                    selectedOrder.status === 'ready' || selectedOrder.status === 'delivering' ? '完成訂單' : ''}
+                                    </button>
+                                )}
+                                {selectedOrder.status !== 'cancelled' && selectedOrder.status !== 'completed' && (
+                                    <button
+                                        className="btn btn-lg"
+                                        style={{ background: 'var(--color-danger)', color: '#fff' }}
+                                        onClick={() => handleCancelOrder(selectedOrder.id)}
+                                    >
+                                        取消訂單
+                                    </button>
+                                )}
+                            </div>
                         </div>
                     </div>
                 )}

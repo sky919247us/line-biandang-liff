@@ -35,7 +35,6 @@ import './styles/card.css';
 import './styles/form.css';
 
 function App() {
-  console.log('App component rendered'); // 偵錯用
 
   return (
     <Router>

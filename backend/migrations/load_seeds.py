@@ -81,6 +81,16 @@ def seed_products(db):
     print(f"  已載入 {option_count} 個客製化選項")
 
 
+def cleanup_ungrouped_options(db):
+    """清除舊的未分組客製化選項（已被群組取代）"""
+    print("清除舊的未分組選項...")
+    deleted = db.query(CustomizationOption).filter(
+        CustomizationOption.group_id.is_(None)
+    ).delete(synchronize_session=False)
+    db.commit()
+    print(f"  已清除 {deleted} 個舊選項")
+
+
 def seed_customization_groups(db):
     """為每個商品載入共用客製化群組"""
     print("載入客製化群組...")
@@ -196,6 +206,7 @@ def run_seeds():
     try:
         seed_categories(db)
         seed_products(db)
+        cleanup_ungrouped_options(db)
         seed_customization_groups(db)
         seed_materials(db)
         seed_product_materials(db)

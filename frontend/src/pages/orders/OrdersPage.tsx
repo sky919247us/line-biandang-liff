@@ -30,8 +30,7 @@ export function OrdersPage() {
                 setOrders(result.items);
             } catch (error) {
                 console.error('載入訂單失敗:', error);
-                // 使用模擬資料
-                setOrders(getMockOrders());
+                setOrders([]);
             } finally {
                 setIsLoading(false);
             }
@@ -185,58 +184,6 @@ export function OrdersPage() {
             <BottomNav />
         </div>
     );
-}
-
-// 模擬資料
-function getMockOrders(): Order[] {
-    const now = new Date();
-    return [
-        {
-            id: '1',
-            orderNumber: 'BD202602040001',
-            orderType: 'pickup',
-            status: 'preparing',
-            subtotal: 165,
-            deliveryFee: 0,
-            discount: 0,
-            total: 165,
-            deliveryAddress: null,
-            contactName: '王小明',
-            contactPhone: '0912345678',
-            pickupTime: null,
-            notes: null,
-            tableNumber: null,
-            pickupNumber: null,
-            items: [
-                { id: '1', productId: '1', productName: '招牌雞腿便當', quantity: 1, unitPrice: 85, subtotal: 85, customizations: null, notes: null },
-                { id: '2', productId: '2', productName: '香滷排骨便當', quantity: 1, unitPrice: 80, subtotal: 80, customizations: null, notes: null },
-            ],
-            createdAt: new Date(now.getTime() - 30 * 60 * 1000).toISOString(),
-            updatedAt: new Date(now.getTime() - 30 * 60 * 1000).toISOString(),
-        },
-        {
-            id: '2',
-            orderNumber: 'BD202602030015',
-            orderType: 'delivery',
-            status: 'completed',
-            subtotal: 190,
-            deliveryFee: 30,
-            discount: 0,
-            total: 220,
-            deliveryAddress: '台北市中正區某某路 456 號',
-            contactName: '王小明',
-            contactPhone: '0912345678',
-            pickupTime: null,
-            notes: null,
-            tableNumber: null,
-            pickupNumber: null,
-            items: [
-                { id: '3', productId: '1', productName: '招牌雞腿便當', quantity: 2, unitPrice: 95, subtotal: 190, customizations: [{ id: 'c1', name: '加蛋', price: 10 }], notes: null },
-            ],
-            createdAt: new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString(),
-            updatedAt: new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString(),
-        },
-    ];
 }
 
 export default OrdersPage;

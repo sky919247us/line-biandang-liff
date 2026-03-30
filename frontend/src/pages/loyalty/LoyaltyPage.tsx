@@ -22,38 +22,27 @@ export function LoyaltyPage() {
     const [account, setAccount] = useState<LoyaltyAccount | null>(null);
     const [transactions, setTransactions] = useState<PointTransaction[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    const loadData = async () => {
+        setIsLoading(true);
+        setError(null);
+        try {
+            const [acc, txns] = await Promise.all([
+                loyaltyApi.getAccount(),
+                loyaltyApi.getTransactions({ limit: 30 }),
+            ]);
+            setAccount(acc);
+            setTransactions(txns.items);
+        } catch (err) {
+            console.error('載入忠誠度資料失敗:', err);
+            setError('載入會員資料失敗，請稍後再試');
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const loadData = async () => {
-            setIsLoading(true);
-            try {
-                const [acc, txns] = await Promise.all([
-                    loyaltyApi.getAccount(),
-                    loyaltyApi.getTransactions({ limit: 30 }),
-                ]);
-                setAccount(acc);
-                setTransactions(txns.items);
-            } catch (err) {
-                console.error('載入忠誠度資料失敗:', err);
-                // Mock data
-                setAccount({
-                    id: '1',
-                    userId: '1',
-                    pointsBalance: 320,
-                    totalEarned: 520,
-                    totalRedeemed: 200,
-                    tier: 'silver',
-                });
-                setTransactions([
-                    { id: '1', points: 24, transactionType: 'earn', description: '訂單 BD202603200001', createdAt: new Date().toISOString() },
-                    { id: '2', points: -100, transactionType: 'redeem', description: '點數折抵', createdAt: new Date(Date.now() - 86400000).toISOString() },
-                    { id: '3', points: 16, transactionType: 'earn', description: '訂單 BD202603180002', createdAt: new Date(Date.now() - 2 * 86400000).toISOString() },
-                    { id: '4', points: 50, transactionType: 'bonus', description: '首購獎勵', createdAt: new Date(Date.now() - 7 * 86400000).toISOString() },
-                ]);
-            } finally {
-                setIsLoading(false);
-            }
-        };
         loadData();
     }, []);
 
@@ -100,6 +89,11 @@ export function LoyaltyPage() {
                         <div className="skeleton" style={{ height: 160, borderRadius: 16 }} />
                         <div className="skeleton" style={{ height: 40, marginTop: 16 }} />
                         <div className="skeleton" style={{ height: 200, marginTop: 16 }} />
+                    </div>
+                ) : error ? (
+                    <div className="loyalty-empty">
+                        <p>{error}</p>
+                        <button className="loyalty-retry-btn" onClick={loadData}>重新載入</button>
                     </div>
                 ) : account ? (
                     <>

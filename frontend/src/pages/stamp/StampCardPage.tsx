@@ -50,9 +50,12 @@ export function StampCardPage() {
     const [cards, setCards] = useState<StampCard[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [actionLoading, setActionLoading] = useState<string | null>(null);
+    const [error, setError] = useState<string | null>(null);
+    const [actionMessage, setActionMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
     const loadData = useCallback(async () => {
         setIsLoading(true);
+        setError(null);
         try {
             const [templatesRes, cardsRes] = await Promise.all([
                 axios.get<StampCardTemplate[]>(`${API_BASE}/stamp-cards/templates`),
@@ -64,41 +67,7 @@ export function StampCardPage() {
             setCards(cardsRes.data);
         } catch (err) {
             console.error('載入集點卡資料失敗:', err);
-            // Mock data for development
-            setTemplates([
-                {
-                    id: 'tpl-1',
-                    name: '消費集點卡',
-                    description: '每次消費滿 $100 即可蓋章一次',
-                    stamps_required: 10,
-                    reward_type: 'coupon',
-                    reward_value: '9折優惠券',
-                    min_order_amount: 100,
-                    is_active: true,
-                },
-            ]);
-            setCards([
-                {
-                    id: 'card-1',
-                    user_id: 'u1',
-                    template_id: 'tpl-1',
-                    stamps_collected: 6,
-                    is_completed: false,
-                    is_reward_claimed: false,
-                    completed_at: null,
-                    created_at: new Date().toISOString(),
-                    template: {
-                        id: 'tpl-1',
-                        name: '消費集點卡',
-                        description: '每次消費滿 $100 即可蓋章一次',
-                        stamps_required: 10,
-                        reward_type: 'coupon',
-                        reward_value: '9折優惠券',
-                        min_order_amount: 100,
-                        is_active: true,
-                    },
-                },
-            ]);
+            setError('載入集點卡資料失敗，請稍後再試');
         } finally {
             setIsLoading(false);
         }

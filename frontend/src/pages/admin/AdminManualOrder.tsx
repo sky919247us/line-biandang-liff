@@ -4,6 +4,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { Product, OrderType } from '../../types';
+import { getProducts } from '../../services/adminApi';
 import '../admin/AdminLayout.css';
 
 interface ManualOrderItem {
@@ -25,12 +26,26 @@ export function AdminManualOrder() {
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
-        // Mock products for selection
-        setProducts([
-            { id: '1', name: '戰斧雞腿', price: 120 } as Product,
-            { id: '2', name: '五告厚豬排', price: 130 } as Product,
-            { id: '3', name: '牛逼菲力', price: 150 } as Product,
-        ]);
+        const loadProducts = async () => {
+            try {
+                const data = await getProducts();
+                setProducts(data.map(p => ({
+                    ...p,
+                    effectivePrice: p.price,
+                    canOrder: true,
+                    isCombo: false,
+                    availablePeriods: null,
+                    salePrice: null,
+                    saleStart: null,
+                    saleEnd: null,
+                    customizationOptions: [],
+                    customizationGroups: [],
+                }) as Product));
+            } catch (err) {
+                console.error('載入商品失敗:', err);
+            }
+        };
+        loadProducts();
     }, []);
 
     const addProduct = (product: Product) => {

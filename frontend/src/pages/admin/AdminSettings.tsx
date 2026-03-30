@@ -65,10 +65,16 @@ export function AdminSettings() {
 
     const handleSave = async () => {
         setIsSaving(true);
-        // 模擬儲存
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        setIsSaving(false);
-        setSaveSuccess(true);
+        try {
+            const { updateSettings } = await import('../../services/adminApi');
+            await updateSettings(settings);
+            setSaveSuccess(true);
+        } catch (err) {
+            console.error('儲存設定失敗:', err);
+            alert('儲存設定失敗，請稍後再試');
+        } finally {
+            setIsSaving(false);
+        }
     };
 
     return (
