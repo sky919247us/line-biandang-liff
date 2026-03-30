@@ -120,6 +120,12 @@ async def root():
 
 
 # 健康檢查端點
+@app.get("/ping", tags=["系統"])
+async def ping():
+    """極簡保活端點，供 cron-job 使用"""
+    return "ok"
+
+
 @app.get("/health", tags=["系統"])
 async def health_check():
     """
