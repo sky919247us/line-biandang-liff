@@ -38,6 +38,13 @@ class UserResponse(BaseModel):
     picture_url: Optional[str]
     phone: Optional[str]
     default_address: Optional[str]
+    role: Optional[str] = None
+
+
+class AdminSetupRequest(BaseModel):
+    """管理員設定請求"""
+    secret_key: str
+    line_user_id: str
 
 
 class UpdateProfileRequest(BaseModel):
@@ -108,9 +115,16 @@ async def line_login(
         db.commit()
         db.refresh(user)
     
+    # Auto-promote: if no admin exists, make this user admin
+    admin_count = db.query(User).filter(User.role == "admin").count()
+    if admin_count == 0:
+        user.role = "admin"
+        db.commit()
+        db.refresh(user)
+
     # 建立 JWT Token
     access_token = create_access_token(data={"sub": user.id})
-    
+
     return LineLoginResponse(
         access_token=access_token,
         user={
@@ -119,9 +133,27 @@ async def line_login(
             "display_name": user.display_name,
             "picture_url": user.picture_url,
             "phone": user.phone,
-            "default_address": user.default_address
+            "default_address": user.default_address,
+            "role": user.role
         }
     )
+
+
+@router.post("/admin-setup")
+async def setup_admin(request: AdminSetupRequest, db: DbSession):
+    """
+    管理員設定端點（備用機制）
+
+    使用 SECRET_KEY 將指定使用者提升為管理員
+    """
+    if request.secret_key != settings.secret_key:
+        raise HTTPException(status_code=403, detail="Secret key 不正確")
+    user = db.query(User).filter(User.line_user_id == request.line_user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="使用者不存在，請先透過 LINE 登入")
+    user.role = "admin"
+    db.commit()
+    return {"message": f"已將 {user.display_name} 設為管理員"}
 
 
 @router.get("/me", response_model=UserResponse)
@@ -141,7 +173,8 @@ async def get_me(current_user: CurrentUser):
         display_name=current_user.display_name,
         picture_url=current_user.picture_url,
         phone=current_user.phone,
-        default_address=current_user.default_address
+        default_address=current_user.default_address,
+        role=current_user.role
     )
 
 
@@ -177,5 +210,6 @@ async def update_profile(
         display_name=current_user.display_name,
         picture_url=current_user.picture_url,
         phone=current_user.phone,
-        default_address=current_user.default_address
+        default_address=current_user.default_address,
+        role=current_user.role
     )

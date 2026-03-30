@@ -1,13 +1,102 @@
 /**
  * 管理後台 - 主佈局
  */
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import './AdminLayout.css';
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api/v1';
+const LIFF_URL = 'https://liff.line.me/2009637072-d5vNxNR8';
+
+type AuthState = 'loading' | 'ok' | 'no_token' | 'not_admin' | 'error';
 
 export function AdminLayout() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [authState, setAuthState] = useState<AuthState>('loading');
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const token = localStorage.getItem('access_token');
+        if (!token) {
+            setAuthState('no_token');
+            return;
+        }
+
+        axios.get(`${API_BASE_URL}/auth/me`, {
+            headers: { Authorization: `Bearer ${token}` }
+        })
+            .then((res) => {
+                if (res.data.role === 'admin') {
+                    setAuthState('ok');
+                } else {
+                    setAuthState('not_admin');
+                }
+            })
+            .catch((err) => {
+                if (err.response?.status === 401) {
+                    localStorage.removeItem('access_token');
+                    setAuthState('no_token');
+                } else if (err.response?.status === 403) {
+                    setAuthState('not_admin');
+                } else {
+                    setAuthState('error');
+                }
+            });
+    }, []);
+
+    if (authState === 'loading') {
+        return (
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', flexDirection: 'column', gap: '16px' }}>
+                <div style={{ fontSize: '18px', color: '#666' }}>驗證中...</div>
+            </div>
+        );
+    }
+
+    if (authState === 'no_token') {
+        return (
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', flexDirection: 'column', gap: '16px', padding: '20px', textAlign: 'center' }}>
+                <h2 style={{ margin: 0 }}>請先登入</h2>
+                <p style={{ color: '#666', margin: 0 }}>管理後台需要透過 LINE 登入才能使用</p>
+                <a
+                    href={LIFF_URL}
+                    style={{ display: 'inline-block', padding: '12px 24px', backgroundColor: '#06C755', color: '#fff', borderRadius: '8px', textDecoration: 'none', fontWeight: 'bold' }}
+                >
+                    透過 LINE 登入
+                </a>
+            </div>
+        );
+    }
+
+    if (authState === 'not_admin') {
+        return (
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', flexDirection: 'column', gap: '16px', padding: '20px', textAlign: 'center' }}>
+                <h2 style={{ margin: 0, color: '#e53e3e' }}>需要管理員權限</h2>
+                <p style={{ color: '#666', margin: 0 }}>您的帳號沒有管理員權限，請聯繫店家管理員</p>
+                <button
+                    onClick={() => navigate('/')}
+                    style={{ padding: '12px 24px', backgroundColor: '#4A90D9', color: '#fff', borderRadius: '8px', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}
+                >
+                    返回前台
+                </button>
+            </div>
+        );
+    }
+
+    if (authState === 'error') {
+        return (
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', flexDirection: 'column', gap: '16px', padding: '20px', textAlign: 'center' }}>
+                <h2 style={{ margin: 0, color: '#e53e3e' }}>連線錯誤</h2>
+                <p style={{ color: '#666', margin: 0 }}>無法連線至伺服器，請稍後再試</p>
+                <button
+                    onClick={() => window.location.reload()}
+                    style={{ padding: '12px 24px', backgroundColor: '#4A90D9', color: '#fff', borderRadius: '8px', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}
+                >
+                    重新整理
+                </button>
+            </div>
+        );
+    }
 
     const navItems = [
         { path: '/admin', icon: 'dashboard', label: '總覽', end: true },
