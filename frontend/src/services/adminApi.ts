@@ -202,6 +202,11 @@ export async function resetProductSold(productId: string): Promise<void> {
     await adminClient.post(`/products/${productId}/reset-sold`);
 }
 
+export async function createProduct(data: { name: string; category_id: string; price: number; description?: string; daily_limit?: number }): Promise<Product> {
+    const response = await adminClient.post('/products', data);
+    return mapProductFromApi(response.data);
+}
+
 export async function updateProduct(productId: string, data: Partial<Product>): Promise<Product> {
     const response = await adminClient.patch(`/products/${productId}`, {
         category_id: data.categoryId,
@@ -258,7 +263,7 @@ export async function getMaterials(lowStockOnly = false): Promise<Material[]> {
 export async function adjustStock(materialId: string, quantity: number, notes?: string): Promise<Material> {
     const response = await adminClient.post(`/inventory/${materialId}/adjust`, {
         quantity,
-        notes,
+        reason: notes,
     });
     return {
         id: response.data.id,
@@ -268,6 +273,67 @@ export async function adjustStock(materialId: string, quantity: number, notes?: 
         safetyStock: response.data.safety_stock,
         isActive: response.data.is_active,
     };
+}
+
+export async function createMaterial(data: { name: string; unit: string; current_stock?: number; safety_stock?: number }): Promise<Material> {
+    const response = await adminClient.post('/inventory', data);
+    return { id: response.data.id, name: response.data.name, unit: response.data.unit, currentStock: response.data.current_stock, safetyStock: response.data.safety_stock, isActive: response.data.is_active };
+}
+
+export async function updateMaterial(materialId: string, data: { name?: string; unit?: string; safety_stock?: number }): Promise<Material> {
+    const response = await adminClient.patch(`/inventory/${materialId}`, data);
+    return { id: response.data.id, name: response.data.name, unit: response.data.unit, currentStock: response.data.current_stock, safetyStock: response.data.safety_stock, isActive: response.data.is_active };
+}
+
+// ==================== BOM API ====================
+
+export interface ProductMaterialBOM {
+    id: string;
+    productId: string;
+    productName: string;
+    materialId: string;
+    materialName: string;
+    quantity: number;
+    unit: string;
+}
+
+export async function getBOMList(params?: { productId?: string; materialId?: string }): Promise<ProductMaterialBOM[]> {
+    const response = await adminClient.get('/inventory/bom/list', {
+        params: {
+            product_id: params?.productId,
+            material_id: params?.materialId,
+        },
+    });
+    return response.data.map((bom: any) => ({
+        id: bom.id,
+        productId: bom.product_id,
+        productName: bom.product_name,
+        materialId: bom.material_id,
+        materialName: bom.material_name,
+        quantity: bom.quantity,
+        unit: bom.unit,
+    }));
+}
+
+export async function createBOM(data: { productId: string; materialId: string; quantity: number }): Promise<ProductMaterialBOM> {
+    const response = await adminClient.post('/inventory/bom', {
+        product_id: data.productId,
+        material_id: data.materialId,
+        quantity: data.quantity,
+    });
+    return {
+        id: response.data.id,
+        productId: response.data.product_id,
+        productName: response.data.product_name,
+        materialId: response.data.material_id,
+        materialName: response.data.material_name,
+        quantity: response.data.quantity,
+        unit: response.data.unit,
+    };
+}
+
+export async function deleteBOM(bomId: string): Promise<void> {
+    await adminClient.delete(`/inventory/bom/${bomId}`);
 }
 
 // ==================== 設定 API ====================

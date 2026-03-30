@@ -1,169 +1,502 @@
 /**
  * 管理後台 - 商品管理頁面
  */
-import { useState, useEffect } from 'react';
-import type { Product, Category } from '../../types';
+import { useState, useEffect, useCallback } from 'react';
+import type { Category } from '../../types';
+import {
+    getProducts,
+    getCategories,
+    toggleProductAvailability,
+    resetProductSold,
+    updateProduct,
+    createProduct,
+} from '../../services/adminApi';
+import type { Product, CustomizationOption } from '../../services/adminApi';
 import '../admin/AdminLayout.css';
 import './AdminProducts.css';
 
-// 模擬商品共用預設值
-const productDefaults: Pick<Product, 'salePrice' | 'effectivePrice' | 'isCombo' | 'availablePeriods' | 'saleStart' | 'saleEnd' | 'customizationGroups'> = {
-    salePrice: null,
-    effectivePrice: 0,
-    isCombo: false,
-    availablePeriods: null,
-    saleStart: null,
-    saleEnd: null,
-    customizationGroups: [],
-};
+// ==================== 新增商品 Modal ====================
 
-// 模擬商品資料
-const mockProducts: Product[] = [
-    {
-        ...productDefaults,
-        id: 'chicken-1',
-        name: '戰斧雞腿',
-        description: '人氣 NO.1！霸氣戰斧雞腿，外酥內嫩，份量十足',
-        price: 120,
-        effectivePrice: 120,
-        imageUrl: null,
-        categoryId: 'chicken',
-        isAvailable: true,
-        canOrder: true,
-        dailyLimit: 30,
-        todaySold: 12,
-        customizationOptions: [],
-    },
-    {
-        ...productDefaults,
-        id: 'chicken-2',
-        name: '醬燒揚雞',
-        description: '日式醬燒風味，炸雞淋上特製醬汁',
-        price: 120,
-        effectivePrice: 120,
-        imageUrl: null,
-        categoryId: 'chicken',
-        isAvailable: true,
-        canOrder: true,
-        dailyLimit: 0,
-        todaySold: 8,
-        customizationOptions: [],
-    },
-    {
-        ...productDefaults, id: 'pork-1', name: '相撲豬太郎',
-        description: '獨家招牌！大份量豬肉料理，吃飽吃滿',
-        price: 120, effectivePrice: 120, imageUrl: null, categoryId: 'pork',
-        isAvailable: true, canOrder: true, dailyLimit: 0, todaySold: 5, customizationOptions: [],
-    },
-    {
-        ...productDefaults, id: 'pork-2', name: '嫩嫩豬柳',
-        description: '軟嫩豬柳條，口感滑嫩',
-        price: 120, effectivePrice: 120, imageUrl: null, categoryId: 'pork',
-        isAvailable: true, canOrder: true, dailyLimit: 0, todaySold: 3, customizationOptions: [],
-    },
-    {
-        ...productDefaults, id: 'pork-3', name: '燒肉多多',
-        description: '香氣四溢的燒肉，肉量超多',
-        price: 120, effectivePrice: 120, imageUrl: null, categoryId: 'pork',
-        isAvailable: true, canOrder: true, dailyLimit: 0, todaySold: 6, customizationOptions: [],
-    },
-    {
-        ...productDefaults, id: 'pork-4', name: '家鄉豬腳',
-        description: '傳統滷製豬腳，軟Q入味',
-        price: 120, effectivePrice: 120, imageUrl: null, categoryId: 'pork',
-        isAvailable: false, canOrder: false, dailyLimit: 0, todaySold: 0, customizationOptions: [],
-    },
-    {
-        ...productDefaults, id: 'pork-5', name: '五告厚豬排',
-        description: '人氣 NO.2！超厚切豬排，外酥內多汁',
-        price: 130, effectivePrice: 130, imageUrl: null, categoryId: 'pork',
-        isAvailable: true, canOrder: true, dailyLimit: 20, todaySold: 15, customizationOptions: [],
-    },
-    {
-        ...productDefaults, id: 'pork-6', name: '藍帶豬排',
-        description: '豬排內夾起司與火腿，香濃美味',
-        price: 180, effectivePrice: 180, imageUrl: null, categoryId: 'pork',
-        isAvailable: true, canOrder: true, dailyLimit: 15, todaySold: 10, customizationOptions: [],
-    },
-    {
-        ...productDefaults, id: 'beef-1', name: '牛逼菲力',
-        description: '嚴選菲力牛排，軟嫩多汁',
-        price: 150, effectivePrice: 150, imageUrl: null, categoryId: 'beef',
-        isAvailable: true, canOrder: true, dailyLimit: 10, todaySold: 8, customizationOptions: [],
-    },
-    {
-        ...productDefaults, id: 'beef-2', name: '鄉村燉牛肉',
-        description: '慢燉牛肉，濃郁入味',
-        price: 120, effectivePrice: 120, imageUrl: null, categoryId: 'beef',
-        isAvailable: true, canOrder: true, dailyLimit: 0, todaySold: 4, customizationOptions: [],
-    },
-    {
-        ...productDefaults, id: 'special-1', name: '隱藏菜單',
-        description: '不定時更新，每日限量供應',
-        price: 120, effectivePrice: 120, imageUrl: null, categoryId: 'special',
-        isAvailable: true, canOrder: true, dailyLimit: 5, todaySold: 3, customizationOptions: [],
-    },
-];
+interface CreateProductModalProps {
+    categories: Category[];
+    onClose: () => void;
+    onCreated: () => void;
+}
 
-const mockCategories: Category[] = [
-    { id: 'chicken', name: '雞', description: '雞肉類便當', imageUrl: null, productCount: 2 },
-    { id: 'pork', name: '豬', description: '豬肉類便當', imageUrl: null, productCount: 6 },
-    { id: 'beef', name: '牛', description: '牛肉類便當', imageUrl: null, productCount: 2 },
-    { id: 'special', name: '?', description: '隱藏菜單', imageUrl: null, productCount: 1 },
-];
+function CreateProductModal({ categories, onClose, onCreated }: CreateProductModalProps) {
+    const [name, setName] = useState('');
+    const [categoryId, setCategoryId] = useState(categories[0]?.id || '');
+    const [price, setPrice] = useState<number>(120);
+    const [description, setDescription] = useState('');
+    const [dailyLimit, setDailyLimit] = useState<number>(0);
+    const [saving, setSaving] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    const handleSubmit = async () => {
+        if (!name.trim()) {
+            setError('請輸入商品名稱');
+            return;
+        }
+        if (price <= 0) {
+            setError('價格必須大於 0');
+            return;
+        }
+        setSaving(true);
+        setError(null);
+        try {
+            await createProduct({
+                name: name.trim(),
+                category_id: categoryId,
+                price,
+                description: description.trim() || undefined,
+                daily_limit: dailyLimit,
+            });
+            onCreated();
+        } catch (err: any) {
+            setError(err.response?.data?.detail || '新增失敗，請稍後再試');
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    return (
+        <div className="admin-modal-overlay" onClick={onClose}>
+            <div className="admin-modal" onClick={(e) => e.stopPropagation()}>
+                <div className="admin-modal__header">
+                    <h3>新增商品</h3>
+                    <button onClick={onClose}>✕</button>
+                </div>
+                <div className="admin-modal__body">
+                    {error && <div className="admin-products__error">{error}</div>}
+                    <div className="form-group">
+                        <label>商品名稱 *</label>
+                        <input
+                            type="text"
+                            className="form-input"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            placeholder="請輸入商品名稱"
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label>分類</label>
+                        <select
+                            className="form-input"
+                            value={categoryId}
+                            onChange={(e) => setCategoryId(e.target.value)}
+                        >
+                            {categories.map((cat) => (
+                                <option key={cat.id} value={cat.id}>
+                                    {cat.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className="form-group">
+                        <label>價格 *</label>
+                        <input
+                            type="number"
+                            className="form-input"
+                            value={price}
+                            min={1}
+                            onChange={(e) => setPrice(parseInt(e.target.value) || 0)}
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label>描述</label>
+                        <textarea
+                            className="form-textarea"
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
+                            placeholder="請輸入商品描述"
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label>每日限量（0 = 不限量）</label>
+                        <input
+                            type="number"
+                            className="form-input"
+                            value={dailyLimit}
+                            min={0}
+                            onChange={(e) => setDailyLimit(parseInt(e.target.value) || 0)}
+                        />
+                    </div>
+                </div>
+                <div className="admin-modal__footer">
+                    <button className="btn btn-secondary" onClick={onClose} disabled={saving}>
+                        取消
+                    </button>
+                    <button className="btn btn-primary" onClick={handleSubmit} disabled={saving}>
+                        {saving ? '儲存中...' : '新增'}
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+// ==================== 編輯商品 Modal ====================
+
+interface EditProductModalProps {
+    product: Product;
+    categories: Category[];
+    onClose: () => void;
+    onSaved: () => void;
+}
+
+interface EditableCustomizationGroup {
+    name: string;
+    options: CustomizationOption[];
+}
+
+function EditProductModal({ product, categories, onClose, onSaved }: EditProductModalProps) {
+    const [name, setName] = useState(product.name);
+    const [categoryId, setCategoryId] = useState(product.categoryId || '');
+    const [price, setPrice] = useState(product.price);
+    const [description, setDescription] = useState(product.description || '');
+    const [dailyLimit, setDailyLimit] = useState(product.dailyLimit);
+    const [saving, setSaving] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    // Group customization options by optionType for display
+    const buildGroups = (options: CustomizationOption[]): EditableCustomizationGroup[] => {
+        const groupMap = new Map<string, CustomizationOption[]>();
+        for (const opt of options) {
+            const key = opt.optionType || 'other';
+            if (!groupMap.has(key)) groupMap.set(key, []);
+            groupMap.get(key)!.push(opt);
+        }
+        const groupLabels: Record<string, string> = {
+            rice_amount: '飯量調整',
+            exclude: '不要',
+            extra: '額外需求',
+        };
+        return Array.from(groupMap.entries()).map(([key, opts]) => ({
+            name: groupLabels[key] || key,
+            options: opts,
+        }));
+    };
+
+    const [groups, setGroups] = useState<EditableCustomizationGroup[]>(
+        buildGroups(product.customizationOptions)
+    );
+
+    // New option input state per group
+    const [newOptionInputs, setNewOptionInputs] = useState<Record<number, string>>({});
+
+    const handleAddOption = (groupIndex: number) => {
+        const optionName = (newOptionInputs[groupIndex] || '').trim();
+        if (!optionName) return;
+        setGroups((prev) => {
+            const updated = [...prev];
+            const group = { ...updated[groupIndex] };
+            const optionTypeMap: Record<string, string> = {
+                '飯量調整': 'rice_amount',
+                '不要': 'exclude',
+                '額外需求': 'extra',
+            };
+            group.options = [
+                ...group.options,
+                {
+                    id: `new-${Date.now()}`,
+                    name: optionName,
+                    optionType: optionTypeMap[group.name] || 'other',
+                    priceAdjustment: 0,
+                },
+            ];
+            updated[groupIndex] = group;
+            return updated;
+        });
+        setNewOptionInputs((prev) => ({ ...prev, [groupIndex]: '' }));
+    };
+
+    const handleRemoveOption = (groupIndex: number, optionIndex: number) => {
+        setGroups((prev) => {
+            const updated = [...prev];
+            const group = { ...updated[groupIndex] };
+            group.options = group.options.filter((_, i) => i !== optionIndex);
+            updated[groupIndex] = group;
+            return updated;
+        });
+    };
+
+    const handleAddGroup = () => {
+        setGroups((prev) => [...prev, { name: '新群組', options: [] }]);
+    };
+
+    const handleSubmit = async () => {
+        if (!name.trim()) {
+            setError('請輸入商品名稱');
+            return;
+        }
+        if (price <= 0) {
+            setError('價格必須大於 0');
+            return;
+        }
+        setSaving(true);
+        setError(null);
+        try {
+            await updateProduct(product.id, {
+                name: name.trim(),
+                categoryId: categoryId || null,
+                price,
+                description: description.trim() || null,
+                dailyLimit,
+            });
+            onSaved();
+        } catch (err: any) {
+            setError(err.response?.data?.detail || '更新失敗，請稍後再試');
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    return (
+        <div className="admin-modal-overlay" onClick={onClose}>
+            <div className="admin-modal" onClick={(e) => e.stopPropagation()}>
+                <div className="admin-modal__header">
+                    <h3>編輯商品</h3>
+                    <button onClick={onClose}>✕</button>
+                </div>
+                <div className="admin-modal__body">
+                    {error && <div className="admin-products__error">{error}</div>}
+                    <div className="form-group">
+                        <label>商品名稱 *</label>
+                        <input
+                            type="text"
+                            className="form-input"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label>分類</label>
+                        <select
+                            className="form-input"
+                            value={categoryId}
+                            onChange={(e) => setCategoryId(e.target.value)}
+                        >
+                            <option value="">未分類</option>
+                            {categories.map((cat) => (
+                                <option key={cat.id} value={cat.id}>
+                                    {cat.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className="form-group">
+                        <label>價格 *</label>
+                        <input
+                            type="number"
+                            className="form-input"
+                            value={price}
+                            min={1}
+                            onChange={(e) => setPrice(parseInt(e.target.value) || 0)}
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label>描述</label>
+                        <textarea
+                            className="form-textarea"
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label>每日限量（0 = 不限量）</label>
+                        <input
+                            type="number"
+                            className="form-input"
+                            value={dailyLimit}
+                            min={0}
+                            onChange={(e) => setDailyLimit(parseInt(e.target.value) || 0)}
+                        />
+                    </div>
+
+                    {/* 客製化選項群組 */}
+                    <div className="admin-products__customization-section">
+                        <div className="admin-products__customization-header">
+                            <h4>客製化選項</h4>
+                            <button
+                                className="btn btn-secondary btn--sm"
+                                onClick={handleAddGroup}
+                            >
+                                + 新增群組
+                            </button>
+                        </div>
+                        {groups.length === 0 && (
+                            <p className="admin-products__empty-hint">尚無客製化選項</p>
+                        )}
+                        {groups.map((group, gi) => (
+                            <div key={gi} className="admin-products__customization-group">
+                                <div className="admin-products__customization-group-title">
+                                    {group.name}
+                                </div>
+                                <div className="admin-products__customization-options">
+                                    {group.options.map((opt, oi) => (
+                                        <div key={opt.id} className="admin-products__customization-option">
+                                            <span>{opt.name}</span>
+                                            {opt.priceAdjustment !== 0 && (
+                                                <span className="admin-products__price-adj">
+                                                    {opt.priceAdjustment > 0 ? '+' : ''}{opt.priceAdjustment}
+                                                </span>
+                                            )}
+                                            <button
+                                                className="admin-products__remove-option-btn"
+                                                onClick={() => handleRemoveOption(gi, oi)}
+                                                title="移除"
+                                            >
+                                                ✕
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="admin-products__add-option-row">
+                                    <input
+                                        type="text"
+                                        className="form-input form-input--sm"
+                                        placeholder="新增選項名稱"
+                                        value={newOptionInputs[gi] || ''}
+                                        onChange={(e) =>
+                                            setNewOptionInputs((prev) => ({ ...prev, [gi]: e.target.value }))
+                                        }
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') handleAddOption(gi);
+                                        }}
+                                    />
+                                    <button
+                                        className="btn btn-primary btn--sm"
+                                        onClick={() => handleAddOption(gi)}
+                                    >
+                                        新增
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+                <div className="admin-modal__footer">
+                    <button className="btn btn-secondary" onClick={onClose} disabled={saving}>
+                        取消
+                    </button>
+                    <button className="btn btn-primary" onClick={handleSubmit} disabled={saving}>
+                        {saving ? '儲存中...' : '儲存'}
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+// ==================== 主元件 ====================
 
 export function AdminProducts() {
     const [products, setProducts] = useState<Product[]>([]);
-    const [categories] = useState<Category[]>(mockCategories);
+    const [categories, setCategories] = useState<Category[]>([]);
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+    const [showCreateModal, setShowCreateModal] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
-        setProducts(mockProducts);
+    const fetchData = useCallback(async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const [productsData, categoriesData] = await Promise.all([
+                getProducts(),
+                getCategories(),
+            ]);
+            setProducts(productsData);
+            setCategories(categoriesData);
+        } catch (err: any) {
+            setError(err.response?.data?.detail || '載入資料失敗，請稍後再試');
+        } finally {
+            setLoading(false);
+        }
     }, []);
 
+    useEffect(() => {
+        fetchData();
+    }, [fetchData]);
+
     const filteredProducts = selectedCategory
-        ? products.filter(p => p.categoryId === selectedCategory)
+        ? products.filter((p) => p.categoryId === selectedCategory)
         : products;
 
     const getCategoryName = (categoryId: string | null) => {
         if (!categoryId) return '未分類';
-        return categories.find(c => c.id === categoryId)?.name || '未分類';
+        return categories.find((c) => c.id === categoryId)?.name || '未分類';
     };
 
-    const handleToggleAvailable = (productId: string) => {
-        setProducts(prev => prev.map(p => {
-            if (p.id === productId) {
-                const newAvailable = !p.isAvailable;
-                return { ...p, isAvailable: newAvailable, canOrder: newAvailable };
-            }
-            return p;
-        }));
+    const handleToggleAvailable = async (productId: string) => {
+        try {
+            const newAvailable = await toggleProductAvailability(productId);
+            setProducts((prev) =>
+                prev.map((p) =>
+                    p.id === productId ? { ...p, isAvailable: newAvailable } : p
+                )
+            );
+        } catch {
+            alert('切換狀態失敗，請稍後再試');
+        }
     };
 
-    const handleUpdateDailyLimit = (productId: string, newLimit: number) => {
-        setProducts(prev => prev.map(p => {
-            if (p.id === productId) {
-                return { ...p, dailyLimit: newLimit };
-            }
-            return p;
-        }));
+    const handleResetSold = async (productId: string) => {
+        try {
+            await resetProductSold(productId);
+            setProducts((prev) =>
+                prev.map((p) =>
+                    p.id === productId ? { ...p, todaySold: 0 } : p
+                )
+            );
+        } catch {
+            alert('重置銷量失敗，請稍後再試');
+        }
     };
 
-    const handleResetSold = (productId: string) => {
-        setProducts(prev => prev.map(p => {
-            if (p.id === productId) {
-                return { ...p, todaySold: 0 };
-            }
-            return p;
-        }));
+    const handleProductCreated = () => {
+        setShowCreateModal(false);
+        fetchData();
     };
+
+    const handleProductSaved = () => {
+        setEditingProduct(null);
+        fetchData();
+    };
+
+    if (loading) {
+        return (
+            <div className="admin-products">
+                <div className="admin-page-header">
+                    <h1 className="admin-page-title">商品管理</h1>
+                </div>
+                <div className="admin-products__loading">載入中...</div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="admin-products">
+                <div className="admin-page-header">
+                    <h1 className="admin-page-title">商品管理</h1>
+                </div>
+                <div className="admin-products__error">
+                    {error}
+                    <button className="btn btn-primary" onClick={fetchData} style={{ marginLeft: 12 }}>
+                        重試
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="admin-products">
             <div className="admin-page-header">
                 <h1 className="admin-page-title">商品管理</h1>
-                <button className="btn btn-primary">
+                <button className="btn btn-primary" onClick={() => setShowCreateModal(true)}>
                     + 新增商品
                 </button>
             </div>
@@ -176,13 +509,13 @@ export function AdminProducts() {
                 >
                     全部 ({products.length})
                 </button>
-                {categories.map(cat => (
+                {categories.map((cat) => (
                     <button
                         key={cat.id}
                         className={`admin-products__category-btn ${selectedCategory === cat.id ? 'active' : ''}`}
                         onClick={() => setSelectedCategory(cat.id)}
                     >
-                        {cat.name} ({products.filter(p => p.categoryId === cat.id).length})
+                        {cat.name} ({products.filter((p) => p.categoryId === cat.id).length})
                     </button>
                 ))}
             </div>
@@ -214,13 +547,9 @@ export function AdminProducts() {
                                     <td>{getCategoryName(product.categoryId)}</td>
                                     <td><strong>${product.price}</strong></td>
                                     <td>
-                                        <input
-                                            type="number"
-                                            className="admin-products__limit-input"
-                                            value={product.dailyLimit}
-                                            min={0}
-                                            onChange={(e) => handleUpdateDailyLimit(product.id, parseInt(e.target.value) || 0)}
-                                        />
+                                        <span className="admin-products__limit-display">
+                                            {product.dailyLimit === 0 ? '不限' : product.dailyLimit}
+                                        </span>
                                     </td>
                                     <td>
                                         <div className="admin-products__sold">
@@ -262,43 +591,35 @@ export function AdminProducts() {
                                     </td>
                                 </tr>
                             ))}
+                            {filteredProducts.length === 0 && (
+                                <tr>
+                                    <td colSpan={7} style={{ textAlign: 'center', padding: '2rem' }}>
+                                        尚無商品資料
+                                    </td>
+                                </tr>
+                            )}
                         </tbody>
                     </table>
                 </div>
             </div>
 
-            {/* 編輯 Modal（簡化版） */}
+            {/* 新增商品 Modal */}
+            {showCreateModal && (
+                <CreateProductModal
+                    categories={categories}
+                    onClose={() => setShowCreateModal(false)}
+                    onCreated={handleProductCreated}
+                />
+            )}
+
+            {/* 編輯商品 Modal */}
             {editingProduct && (
-                <div className="admin-modal-overlay" onClick={() => setEditingProduct(null)}>
-                    <div className="admin-modal" onClick={(e) => e.stopPropagation()}>
-                        <div className="admin-modal__header">
-                            <h3>編輯商品</h3>
-                            <button onClick={() => setEditingProduct(null)}>✕</button>
-                        </div>
-                        <div className="admin-modal__body">
-                            <div className="form-group">
-                                <label>商品名稱</label>
-                                <input type="text" className="form-input" value={editingProduct.name} readOnly />
-                            </div>
-                            <div className="form-group">
-                                <label>價格</label>
-                                <input type="number" className="form-input" value={editingProduct.price} readOnly />
-                            </div>
-                            <div className="form-group">
-                                <label>描述</label>
-                                <textarea className="form-textarea" value={editingProduct.description || ''} readOnly />
-                            </div>
-                            <p className="admin-modal__note">
-                                完整編輯功能開發中...
-                            </p>
-                        </div>
-                        <div className="admin-modal__footer">
-                            <button className="btn btn-secondary" onClick={() => setEditingProduct(null)}>
-                                關閉
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                <EditProductModal
+                    product={editingProduct}
+                    categories={categories}
+                    onClose={() => setEditingProduct(null)}
+                    onSaved={handleProductSaved}
+                />
             )}
         </div>
     );

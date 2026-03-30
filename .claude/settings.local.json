@@ -30,7 +30,10 @@
       "Bash(python -m pytest tests/ -x -q)",
       "Bash(python -m pytest tests/ -v)",
       "Bash(find 'D:/LINE Biandang LIFF/backend/tests' -name *.py -not -path *__pycache__*)",
-      "Bash(find 'D:/LINE Biandang LIFF' \\\\\\(-name *.db -o -name *.sqlite -o -name .env \\\\\\))"
+      "Bash(find 'D:/LINE Biandang LIFF' \\\\\\(-name *.db -o -name *.sqlite -o -name .env \\\\\\))",
+      "Bash(python -c \"import secrets; print\\(secrets.token_hex\\(32\\)\\)\")",
+      "WebFetch(domain:biandang-backend.onrender.com)",
+      "WebFetch(domain:biandang-72h.pages.dev)"
     ]
   }
 }

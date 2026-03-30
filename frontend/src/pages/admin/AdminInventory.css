@@ -116,3 +116,103 @@
     outline: none;
     border-color: var(--color-primary);
 }
+
+/* 新增物料 Modal */
+.admin-inventory__modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: var(--spacing-md);
+}
+
+.admin-inventory__modal {
+    background: #fff;
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-xl);
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+}
+
+.admin-inventory__modal-title {
+    margin: 0 0 var(--spacing-lg) 0;
+    font-size: var(--font-size-lg);
+}
+
+.admin-inventory__modal-error {
+    background: #fee2e2;
+    color: #dc2626;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--border-radius-sm);
+    margin-bottom: var(--spacing-md);
+    font-size: var(--font-size-sm);
+}
+
+.admin-inventory__modal-field {
+    margin-bottom: var(--spacing-md);
+}
+
+.admin-inventory__modal-field label {
+    display: block;
+    margin-bottom: var(--spacing-xs);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: #374151;
+}
+
+.admin-inventory__modal-field input {
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    font-size: var(--font-size-sm);
+    box-sizing: border-box;
+}
+
+.admin-inventory__modal-field input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+}
+
+.admin-inventory__modal-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-lg);
+    justify-content: flex-end;
+}
+
+/* BOM 表單 */
+.admin-inventory__bom-form {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md);
+    background: #f9fafb;
+    border-bottom: 1px solid var(--border-color);
+    flex-wrap: wrap;
+}
+
+.admin-inventory__bom-form select,
+.admin-inventory__bom-form input {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    font-size: var(--font-size-sm);
+}
+
+.admin-inventory__bom-form select {
+    min-width: 150px;
+}
+
+.admin-inventory__bom-form select:focus,
+.admin-inventory__bom-form input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+}
