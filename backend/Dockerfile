@@ -38,6 +38,8 @@ ENV PORT=8000
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:${PORT}/health || exit 1
 
-# 啟動時初始化資料庫 + 啟動伺服器
-CMD uv run python -c "from app.core.database import init_db; init_db(); print('DB initialized')" && \
+# 啟動時初始化資料庫 + 載入種子資料 + 啟動伺服器
+CMD uv run python -c "\
+from app.core.database import init_db; init_db(); print('DB initialized'); \
+from migrations.load_seeds import run_seeds; run_seeds()" && \
     uv run uvicorn app.main:app --host 0.0.0.0 --port ${PORT}
