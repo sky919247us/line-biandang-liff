@@ -20,7 +20,7 @@ const adminClient: AxiosInstance = axios.create({
 // 請求攔截器 - 加入認證 Token
 adminClient.interceptors.request.use(
     (config) => {
-        const token = localStorage.getItem('admin_token');
+        const token = localStorage.getItem('access_token');
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
@@ -35,8 +35,7 @@ adminClient.interceptors.response.use(
     (error) => {
         if (error.response?.status === 401) {
             // 未授權，可能需要重新登入
-            localStorage.removeItem('admin_token');
-            window.location.href = '/admin/login';
+            localStorage.removeItem('access_token');
         }
         return Promise.reject(error);
     }
