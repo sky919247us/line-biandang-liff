@@ -34,6 +34,52 @@ CATEGORIES = [
     },
 ]
 
+# 全商品共用客製化群組
+# 每個商品都會自動套用這些群組
+COMMON_CUSTOMIZATION_GROUPS = [
+    {
+        "id_suffix": "rice",
+        "name": "飯量調整",
+        "group_type": "single_select",
+        "min_select": 0,
+        "max_select": 1,
+        "is_required": False,
+        "sort_order": 1,
+        "options": [
+            {"name": "1/3飯", "option_type": "modifier", "price_adjustment": 0},
+            {"name": "半飯", "option_type": "modifier", "price_adjustment": 0},
+            {"name": "加飯", "option_type": "modifier", "price_adjustment": 0},
+            {"name": "不飯換菜", "option_type": "modifier", "price_adjustment": 0},
+        ],
+    },
+    {
+        "id_suffix": "exclude",
+        "name": "不要",
+        "group_type": "multi_select",
+        "min_select": 0,
+        "max_select": 0,  # 0 = 不限
+        "is_required": False,
+        "sort_order": 2,
+        "options": [
+            {"name": "蔥", "option_type": "modifier", "price_adjustment": 0},
+            {"name": "香菜", "option_type": "modifier", "price_adjustment": 0},
+            {"name": "餐具", "option_type": "modifier", "price_adjustment": 0},
+        ],
+    },
+    {
+        "id_suffix": "extra",
+        "name": "額外需求",
+        "group_type": "multi_select",
+        "min_select": 0,
+        "max_select": 0,
+        "is_required": False,
+        "sort_order": 3,
+        "options": [
+            {"name": "加辣", "option_type": "modifier", "price_adjustment": 0},
+        ],
+    },
+]
+
 # 商品資料
 PRODUCTS = [
     # 雞肉類
@@ -45,11 +91,7 @@ PRODUCTS = [
         "price": 120,
         "daily_limit": 30,
         "display_order": 1,
-        "customizations": [
-            {"name": "少飯", "option_type": "modifier", "price_adjustment": 0},
-            {"name": "加辣", "option_type": "modifier", "price_adjustment": 0},
-            {"name": "不要蔥", "option_type": "modifier", "price_adjustment": 0},
-        ],
+        "customizations": [],
     },
     {
         "id": "prod-chicken-2",
@@ -59,10 +101,7 @@ PRODUCTS = [
         "price": 120,
         "daily_limit": 0,
         "display_order": 2,
-        "customizations": [
-            {"name": "少飯", "option_type": "modifier", "price_adjustment": 0},
-            {"name": "加辣", "option_type": "modifier", "price_adjustment": 0},
-        ],
+        "customizations": [],
     },
     # 豬肉類
     {
@@ -73,10 +112,7 @@ PRODUCTS = [
         "price": 120,
         "daily_limit": 0,
         "display_order": 1,
-        "customizations": [
-            {"name": "少飯", "option_type": "modifier", "price_adjustment": 0},
-            {"name": "加辣", "option_type": "modifier", "price_adjustment": 0},
-        ],
+        "customizations": [],
     },
     {
         "id": "prod-pork-2",
@@ -86,9 +122,7 @@ PRODUCTS = [
         "price": 120,
         "daily_limit": 0,
         "display_order": 2,
-        "customizations": [
-            {"name": "少飯", "option_type": "modifier", "price_adjustment": 0},
-        ],
+        "customizations": [],
     },
     {
         "id": "prod-pork-3",
@@ -98,10 +132,7 @@ PRODUCTS = [
         "price": 120,
         "daily_limit": 0,
         "display_order": 3,
-        "customizations": [
-            {"name": "少飯", "option_type": "modifier", "price_adjustment": 0},
-            {"name": "加辣", "option_type": "modifier", "price_adjustment": 0},
-        ],
+        "customizations": [],
     },
     {
         "id": "prod-pork-4",
@@ -111,9 +142,7 @@ PRODUCTS = [
         "price": 120,
         "daily_limit": 0,
         "display_order": 4,
-        "customizations": [
-            {"name": "少飯", "option_type": "modifier", "price_adjustment": 0},
-        ],
+        "customizations": [],
     },
     {
         "id": "prod-pork-5",
@@ -123,10 +152,7 @@ PRODUCTS = [
         "price": 130,
         "daily_limit": 20,
         "display_order": 5,
-        "customizations": [
-            {"name": "少飯", "option_type": "modifier", "price_adjustment": 0},
-            {"name": "加辣", "option_type": "modifier", "price_adjustment": 0},
-        ],
+        "customizations": [],
     },
     {
         "id": "prod-pork-6",
@@ -136,9 +162,7 @@ PRODUCTS = [
         "price": 180,
         "daily_limit": 15,
         "display_order": 6,
-        "customizations": [
-            {"name": "少飯", "option_type": "modifier", "price_adjustment": 0},
-        ],
+        "customizations": [],
     },
     # 牛肉類
     {
@@ -149,9 +173,7 @@ PRODUCTS = [
         "price": 150,
         "daily_limit": 10,
         "display_order": 1,
-        "customizations": [
-            {"name": "少飯", "option_type": "modifier", "price_adjustment": 0},
-        ],
+        "customizations": [],
     },
     {
         "id": "prod-beef-2",
@@ -161,10 +183,7 @@ PRODUCTS = [
         "price": 120,
         "daily_limit": 0,
         "display_order": 2,
-        "customizations": [
-            {"name": "少飯", "option_type": "modifier", "price_adjustment": 0},
-            {"name": "加辣", "option_type": "modifier", "price_adjustment": 0},
-        ],
+        "customizations": [],
     },
     # 隱藏菜單
     {
