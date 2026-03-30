@@ -139,6 +139,11 @@ export function ReferralPage() {
             <Header title="推薦好友" showBack />
 
             <main className="page-content">
+                {error && (
+                    <div className="error-message" style={{ color: '#e53e3e', textAlign: 'center', padding: '2rem 1rem' }}>
+                        {error}
+                    </div>
+                )}
                 {isLoading ? (
                     <div className="referral-skeleton">
                         <div className="skeleton" style={{ height: 140, borderRadius: 16 }} />

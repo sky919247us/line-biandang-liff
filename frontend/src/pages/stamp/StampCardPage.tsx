@@ -85,13 +85,14 @@ export function StampCardPage() {
                 { template_id: templateId },
                 { headers: getAuthHeaders() }
             );
+            setActionMessage({ type: 'success', text: '已開始集點！' });
             await loadData();
         } catch (err: unknown) {
             const message =
                 axios.isAxiosError(err) && err.response?.data?.detail
                     ? err.response.data.detail
                     : '開始集點失敗';
-            alert(message);
+            setActionMessage({ type: 'error', text: message });
         } finally {
             setActionLoading(null);
         }
@@ -105,14 +106,14 @@ export function StampCardPage() {
                 {},
                 { headers: getAuthHeaders() }
             );
-            alert(res.data.message);
+            setActionMessage({ type: 'success', text: res.data.message });
             await loadData();
         } catch (err: unknown) {
             const message =
                 axios.isAxiosError(err) && err.response?.data?.detail
                     ? err.response.data.detail
                     : '兌換失敗';
-            alert(message);
+            setActionMessage({ type: 'error', text: message });
         } finally {
             setActionLoading(null);
         }
@@ -128,6 +129,22 @@ export function StampCardPage() {
             <Header title="集點卡" showBack />
 
             <main className="page-content">
+                {error && (
+                    <div className="error-message" style={{ color: '#e53e3e', textAlign: 'center', padding: '2rem 1rem' }}>
+                        {error}
+                    </div>
+                )}
+                {actionMessage && (
+                    <div style={{
+                        padding: '0.75rem 1rem',
+                        borderRadius: 8,
+                        marginBottom: '1rem',
+                        backgroundColor: actionMessage.type === 'success' ? '#f0fff4' : '#fff5f5',
+                        color: actionMessage.type === 'success' ? '#38a169' : '#e53e3e',
+                    }}>
+                        {actionMessage.text}
+                    </div>
+                )}
                 {isLoading ? (
                     <div className="stamp-skeleton">
                         <div className="skeleton" style={{ height: 120, borderRadius: 16 }} />
